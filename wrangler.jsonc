@@ -1,0 +1,7 @@
+{
+  "name": "jahspur-website",
+  "compatibility_date": "2026-08-01",
+  "assets": {
+    "directory": "./frontend/build"
+  }
+}

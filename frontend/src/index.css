@@ -1,0 +1,391 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Jah Spur palette. Base is a warm high-desert night (not pure black), the
+   accents come straight from his cube logo (red / gold / green), softened a
+   touch so they glow on dark instead of shouting, plus adobe and sage for
+   the "earth tones" he asked for. */
+:root {
+  --js-black: #0b0806;
+  --js-black-2: #120d09;
+  --js-black-3: #1a130d;
+  --js-earth: #33221a;
+  --js-adobe: #9a5634;
+  --js-adobe-light: #c98a5e;
+  --js-gold: #e2a838;
+  --js-gold-accent: #b9822a;
+  --js-gold-light: #f3d08a;
+  --js-red: #a3262a;
+  --js-red-deep: #5e0c12;
+  --js-green: #4f8a35;
+  --js-green-deep: #1f4a16;
+  --js-sage: #9aab86;
+  --js-sky-night: #0d1220;
+  --js-sky-dusk: #2a1f33;
+  --js-text: #f6eedf;
+  --js-text-soft: #c9b8a0;
+  --js-text-muted: #85745f;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  overflow-x: clip;
+  scroll-behavior: smooth;
+  background: var(--js-black);
+}
+
+body {
+  margin: 0;
+  background: var(--js-black);
+  color: var(--js-text);
+  font-family: "Outfit", -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: rgba(226, 168, 56, 0.3);
+  color: #fff;
+}
+
+/* Fonts. Marcellus is the display face: Roman inscription capitals, chiseled
+   rather than drawn, which is "ancient" and "written in stone" without
+   leaning on western/novelty type (he asked for nothing kitschy).
+   Cormorant Garamond carries anything read at length; Outfit is for small
+   UI text. */
+.font-display {
+  font-family: "Marcellus", serif;
+}
+.font-body {
+  font-family: "Outfit", sans-serif;
+}
+.font-accent {
+  font-family: "Cormorant Garamond", serif;
+}
+
+/* text-decoration reset: Tailwind ships an `overline` utility
+   (text-decoration-line: overline) that would otherwise draw a rule over
+   every label using this class. */
+.overline {
+  text-decoration: none;
+  font-family: "Marcellus", serif;
+  text-transform: uppercase;
+  letter-spacing: 0.32em;
+  font-size: 0.72rem;
+  color: var(--js-gold);
+}
+
+/* Sunrise gradient text: gold light -> gold -> adobe. */
+.text-gold-grad {
+  background: linear-gradient(180deg, var(--js-gold-light) 0%, var(--js-gold) 55%, var(--js-adobe) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Carved-stone text: pale limestone face with a darker lower edge, for big
+   display words (the name, the album title). */
+.text-stone {
+  background: linear-gradient(180deg, #fbf3e3 0%, #e9dcc3 45%, #b9a585 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.55));
+}
+
+.text-legible {
+  text-shadow: 0 2px 28px rgba(0, 0, 0, 0.75), 0 1px 6px rgba(0, 0, 0, 0.65);
+}
+
+/* Desert night sky. Same star-dot technique as the template's starfield,
+   warmer tint and a few gold stars. */
+.starfield {
+  position: relative;
+  background-color: var(--js-black);
+  background-image:
+    radial-gradient(1.5px 1.5px at 20% 30%, rgba(255, 248, 232, 0.85), transparent),
+    radial-gradient(1.5px 1.5px at 70% 60%, rgba(255, 248, 232, 0.7), transparent),
+    radial-gradient(2px 2px at 40% 80%, rgba(255, 248, 232, 0.75), transparent),
+    radial-gradient(1.5px 1.5px at 85% 15%, rgba(255, 248, 232, 0.6), transparent),
+    radial-gradient(1.5px 1.5px at 10% 70%, rgba(255, 248, 232, 0.55), transparent),
+    radial-gradient(2px 2px at 55% 25%, rgba(255, 248, 232, 0.7), transparent),
+    radial-gradient(1px 1px at 30% 10%, rgba(243, 208, 138, 0.7), transparent),
+    radial-gradient(1px 1px at 90% 45%, rgba(255, 248, 232, 0.5), transparent),
+    radial-gradient(1.5px 1.5px at 5% 45%, rgba(255, 248, 232, 0.55), transparent),
+    radial-gradient(1px 1px at 60% 90%, rgba(243, 208, 138, 0.6), transparent);
+  background-repeat: repeat;
+  background-size: 420px 420px;
+}
+.starfield::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-repeat: repeat;
+  background-size: 420px 420px;
+  background-image:
+    radial-gradient(1px 1px at 12% 48%, rgba(255, 248, 232, 0.8), transparent),
+    radial-gradient(1.5px 1.5px at 62% 12%, rgba(243, 208, 138, 0.7), transparent),
+    radial-gradient(1px 1px at 38% 88%, rgba(255, 248, 232, 0.6), transparent),
+    radial-gradient(1px 1px at 78% 55%, rgba(255, 248, 232, 0.55), transparent);
+  animation: twinkle 7s ease-in-out infinite;
+  transform: translate3d(calc(var(--wand-ndx, 0) * -8px), calc(var(--wand-ndy, 0) * -6px), 0);
+}
+
+/* Fine sandstone grain. */
+.grain::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
+  opacity: 0.06;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+}
+
+.hairline {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(226, 168, 56, 0.45), transparent);
+}
+
+/* Red / gold / green rule, the logo's three colors as a thin tricolor
+   stroke. Used sparingly as a section divider. */
+.tricolor-rule {
+  height: 2px;
+  width: 72px;
+  background: linear-gradient(90deg, var(--js-red) 0 33.3%, var(--js-gold) 33.3% 66.6%, var(--js-green) 66.6% 100%);
+  border-radius: 2px;
+  opacity: 0.85;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.85; }
+}
+
+@keyframes scroll-cue {
+  0% { transform: translateY(0); opacity: 0; }
+  40% { opacity: 1; }
+  100% { transform: translateY(12px); opacity: 0; }
+}
+
+@keyframes breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.025); }
+}
+.animate-breathe {
+  animation: breathe 4.5s ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+.animate-float-slow {
+  animation: float-slow 8s ease-in-out infinite;
+}
+
+/* Glow cursor (GlowCursor.jsx): a soft sun-gold light behind the native
+   cursor; turns sage-green over anything clickable. */
+.glow-cursor {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 9px;
+  height: 9px;
+  margin-left: -4.5px;
+  margin-top: -4.5px;
+  border-radius: 50%;
+  background: transparent;
+  box-shadow: 0 0 9px 3px rgba(226, 168, 56, 0.5), 0 0 18px 7px rgba(226, 168, 56, 0.2);
+  opacity: 0.85;
+  transition: box-shadow 0.15s ease, opacity 0.15s ease;
+}
+.glow-cursor--active {
+  box-shadow: 0 0 12px 4px rgba(154, 171, 134, 0.6), 0 0 22px 9px rgba(79, 138, 53, 0.28);
+  opacity: 1;
+}
+
+/* Mist. Two soft bands that drift sideways in opposite directions, for the
+   "misty, mystic" mountain mornings in his Prophecy answer. */
+@keyframes mist-drift-a {
+  0%, 100% { transform: translateX(-6%); }
+  50% { transform: translateX(6%); }
+}
+@keyframes mist-drift-b {
+  0%, 100% { transform: translateX(5%); }
+  50% { transform: translateX(-5%); }
+}
+.mist-a,
+.mist-b {
+  position: absolute;
+  left: -20%;
+  right: -20%;
+  pointer-events: none;
+  will-change: transform;
+}
+.mist-a {
+  background: radial-gradient(ellipse 50% 60% at 30% 50%, rgba(246, 238, 223, 0.16) 0%, transparent 70%),
+    radial-gradient(ellipse 45% 55% at 75% 45%, rgba(246, 238, 223, 0.12) 0%, transparent 70%);
+  animation: mist-drift-a 70s ease-in-out infinite;
+}
+.mist-b {
+  background: radial-gradient(ellipse 55% 60% at 60% 55%, rgba(246, 238, 223, 0.12) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 50% at 15% 40%, rgba(243, 208, 138, 0.08) 0%, transparent 70%);
+  animation: mist-drift-b 95s ease-in-out infinite;
+}
+
+/* Very slow push-in for still photos. */
+@keyframes kenburns {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.04); }
+}
+.animate-kenburns {
+  animation: kenburns 60s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+/* Warm haze drifting across page backgrounds. */
+@keyframes haze-drift {
+  0%, 100% { transform: translateX(-4%); }
+  50% { transform: translateX(4%); }
+}
+.haze-drift {
+  position: absolute;
+  inset: -15% -25%;
+  background:
+    radial-gradient(ellipse 55% 38% at 28% 42%, rgba(255, 244, 225, 0.04) 0%, transparent 70%),
+    radial-gradient(ellipse 48% 34% at 72% 66%, rgba(226, 168, 56, 0.04) 0%, transparent 70%);
+  animation: haze-drift 110s ease-in-out infinite;
+  pointer-events: none;
+  will-change: transform;
+}
+
+/* Slow breathing glow for primary CTAs and the signup card. */
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 0 rgba(226, 168, 56, 0.12); }
+  50% { box-shadow: 0 0 24px rgba(226, 168, 56, 0.32); }
+}
+.animate-glow-pulse {
+  animation: glow-pulse 5s ease-in-out infinite;
+}
+
+@keyframes wordmark-float-glow {
+  0%, 100% { transform: translateY(0); filter: drop-shadow(0 0 4px rgba(226, 168, 56, 0.2)); }
+  50% { transform: translateY(-2px); filter: drop-shadow(0 0 12px rgba(226, 168, 56, 0.45)); }
+}
+.animate-wordmark-float {
+  animation: wordmark-float-glow 4.5s ease-in-out infinite;
+}
+
+/* Fireflies / embers (Fireflies.jsx). */
+@keyframes firefly-glide {
+  0%, 100% { transform: translate(0, 0); opacity: 0; }
+  10% { opacity: 1; }
+  45% { opacity: 1; }
+  55% { transform: translate(var(--fx), var(--fy)); opacity: 0; }
+}
+
+/* Glyph field (GlyphField.jsx): his own symbols (cube, trinity knot,
+   coptic cross) plus a sun and a spiral, drawn as faint carved lines that
+   turn very slowly. */
+@keyframes glyph-turn {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.glyph-turn {
+  animation-name: glyph-turn;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+/* Marquee (EPK regions ticker). */
+@keyframes marquee-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee-scroll 50s linear infinite;
+}
+
+/* Sun-gold shimmer across a card, once. */
+@keyframes shimmer-sweep {
+  0% { transform: translateX(-160%) skewX(-18deg); opacity: 0; }
+  25% { opacity: 0.5; }
+  70% { opacity: 0; }
+  100% { transform: translateX(260%) skewX(-18deg); opacity: 0; }
+}
+.shimmer-overlay {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+}
+.shimmer-overlay::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 45%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 240, 210, 0.16), transparent);
+  animation: shimmer-sweep 3.2s ease-in-out 1.2s infinite;
+}
+
+/* Stone tablet surface for the album card. Layered noise + a warm light
+   from the upper left, so it reads as carved sandstone, not a flat box. */
+.stone-surface {
+  background-color: #3a2c22;
+  background-image:
+    radial-gradient(ellipse at 22% 12%, rgba(255, 228, 180, 0.22) 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 90%, rgba(0, 0, 0, 0.45) 0%, transparent 60%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='s'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.55' numOctaves='4'/%3E%3CfeColorMatrix values='0 0 0 0 0.85 0 0 0 0 0.72 0 0 0 0 0.56 0 0 0 0.55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23s)'/%3E%3C/svg%3E");
+  box-shadow: inset 0 1px 0 rgba(255, 235, 200, 0.15), inset 0 -18px 40px rgba(0, 0, 0, 0.45), 0 40px 120px -30px rgba(0, 0, 0, 0.9);
+}
+
+/* Carved line: a dark groove with a light lower lip, for petroglyph strokes
+   drawn as SVG on the stone. */
+.carved {
+  filter: drop-shadow(0 1px 0 rgba(255, 236, 205, 0.28)) drop-shadow(0 -1px 0 rgba(0, 0, 0, 0.5));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glyph-turn,
+  .mist-a,
+  .mist-b,
+  .animate-kenburns,
+  .haze-drift,
+  .marquee-track,
+  .shimmer-overlay::after,
+  .starfield::before {
+    animation: none !important;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 9px;
+}
+::-webkit-scrollbar-track {
+  background: var(--js-black);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--js-earth);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--js-gold-accent);
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
