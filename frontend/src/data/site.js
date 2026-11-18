@@ -73,6 +73,14 @@ export const HERO_BIO_MOBILE =
 
 export const HERO_CTA = { label: "My Story", to: "/about" };
 
+// Hero photo: jah1, extended upward in Canva for headroom (3000x2800 source,
+// 2400px web copy).
+export const HERO_IMAGE = "/jahspur-hero-extended.jpg";
+// Optional 3D depth layer: the SAME canvas with the background removed (him
+// only, transparent PNG, same size and position). When set, he pushes in
+// faster than the trees behind him for real parallax. Null = single layer.
+export const HERO_CUTOUT = null;
+
 // Small announcement bubble on the Hero (one-line edit when there's news).
 export const HERO_ANNOUNCEMENT = {
   image: "/jahspur-hero-04.jpg",

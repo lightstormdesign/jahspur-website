@@ -1,25 +1,23 @@
 import { Link } from "react-router-dom";
 import { Navbar } from "@/components/site/Navbar";
 import { Footer } from "@/components/site/Footer";
-import { Hero } from "@/components/site/Hero";
+import { EnterHero } from "@/components/site/EnterHero";
 import { AlbumTablet } from "@/components/site/AlbumTablet";
 import { SignupForm } from "@/components/site/SignupForm";
 import { Reveal } from "@/components/site/Reveal";
 import { SymbolRow } from "@/components/site/Glyphs";
 import { ALBUM, LASTING_MESSAGE, CALL_TO_ACTION } from "@/data/site";
 
-// Hero-first: the visitor lands on Jah himself, then one section that serves
-// his two main goals (album support, a 5,000-person list), then the footer.
-//
-// The illustrated dawn-world intro (DawnExperience.jsx, half-moon night ->
-// misty sunrise over the mountains -> hero) is built and kept, but off: it's
-// the paid "World upgrade" beyond this package. To turn it on, replace
-// <Hero /> with <DawnExperience /> (import from components/site).
+// Scroll to enter (EnterHero.jsx): his real photo, pushed into as you
+// scroll, with his name rising over it; then album + list, then the footer.
+// Hero.jsx is the simpler static version, kept as a fallback.
+// DawnExperience.jsx (the illustrated dawn world) is built but switched off.
+
 export default function Home() {
   return (
     <div data-testid="home-page" className="relative bg-[var(--js-black)]">
       <Navbar />
-      <Hero />
+      <EnterHero />
 
       {/* Album, then the list as its own centered beat. Splitting them keeps
           the desktop row balanced (tablet beside a short text block, not a
