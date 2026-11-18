@@ -4,7 +4,7 @@ import { ChevronDown } from "lucide-react";
 import { Navbar } from "@/components/site/Navbar";
 import { Footer } from "@/components/site/Footer";
 import { Fireflies } from "@/components/site/Fireflies";
-import { SOCIALS, NAME_STORY, CALL_TO_ACTION } from "@/data/site";
+import { SOCIALS, CALL_TO_ACTION } from "@/data/site";
 import { useIsMobile } from "@/hooks/useIsMobile";
 
 // Mobile-only discrete slide gesture tuning. Desktop's continuous
@@ -167,14 +167,6 @@ const STAGES = [
       "I make music to share my spiritual fruits and gifts: to uplift, encourage, and empower the ones I can touch with my offerings.",
       "My prayer is that others may find inspiration to find, do, and share their purpose.",
     ],
-    showChevron: true,
-  },
-  {
-    id: "in-stone",
-    title: NAME_STORY.title,
-    media: "/jahspur-hero-04.jpg",
-    alt: "Jah Spur singing with his eyes closed",
-    body: NAME_STORY.body,
     showChevron: true,
   },
   {

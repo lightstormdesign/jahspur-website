@@ -18,7 +18,7 @@ import { ALBUM, GOFUNDME_URL, PRESALE_URL, STREAMING_LINKS, VIDEOS, ARTIST_NAME,
 const SupportButton = () => {
   const href = PRESALE_URL || GOFUNDME_URL;
   const cls =
-    "inline-flex items-center gap-2 rounded-full border border-white/30 px-7 py-3 font-body text-sm text-white/90 transition-colors hover:border-[var(--js-gold)] hover:text-[var(--js-gold-light)]";
+    "inline-flex items-center justify-center gap-2 rounded-full border border-white/30 px-5 py-3 font-body text-sm text-white/90 transition-colors hover:border-[var(--js-gold)] hover:text-[var(--js-gold-light)]";
   if (href) {
     return (
       <a href={href} target="_blank" rel="noopener noreferrer" data-testid="album-support-link" className={cls}>
@@ -46,8 +46,8 @@ export default function Album() {
 
       <main className="relative z-10">
         {/* --- the record --- */}
-        <section className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-14 px-6 pb-24 pt-36 lg:grid-cols-[1fr_1.05fr] lg:pt-44">
-          <Reveal className="mx-auto w-full max-w-[460px]">
+        <section className="mx-auto grid max-w-5xl grid-cols-1 items-center gap-9 px-6 pb-16 pt-24 md:grid-cols-[0.9fr_1fr] md:gap-16 md:pb-24 md:pt-40">
+          <Reveal className="mx-auto w-full max-w-[300px] md:max-w-[440px]">
             <div className="relative">
               <div
                 aria-hidden
@@ -57,17 +57,17 @@ export default function Album() {
               <AlbumTablet className="relative" />
             </div>
           </Reveal>
-          <Reveal delay={0.1} className="text-center lg:text-left">
+          <Reveal delay={0.1} className="text-center md:text-left">
             <span className="overline">{ALBUM.status}</span>
-            <h1 className="font-display text-stone mt-4 text-5xl uppercase leading-[1.05] tracking-[0.1em] sm:text-6xl">{ALBUM.title}</h1>
+            <h1 className="font-display text-stone mt-3 text-[2.4rem] uppercase leading-[1.05] tracking-[0.08em] sm:text-6xl">{ALBUM.title}</h1>
             <p className="font-display mt-4 text-xs uppercase tracking-[0.4em] text-white/60">
               {ARTIST_NAME} &amp; {BAND_NAME}
             </p>
-            <div className="tricolor-rule mx-auto mt-6 lg:mx-0" />
-            <p className="font-accent mt-6 text-xl leading-relaxed text-white/85 sm:text-2xl">{ALBUM.description}</p>
+            <div className="tricolor-rule mx-auto mt-6 md:mx-0" />
+            <p className="font-accent mt-5 text-lg leading-relaxed text-white/85 sm:text-2xl">{ALBUM.description}</p>
 
             {STREAMING_LINKS.length > 0 ? (
-              <div className="mt-7 flex flex-wrap justify-center gap-2 lg:justify-start">
+              <div className="mt-7 flex flex-wrap justify-center gap-2 md:justify-start">
                 {STREAMING_LINKS.map((l) => (
                   <a
                     key={l.label}
@@ -84,10 +84,10 @@ export default function Album() {
               <p className="font-body mt-6 text-sm font-light text-white/55">Release date and where to listen: coming soon. The list hears first.</p>
             )}
 
-            <div className="mt-7 flex flex-wrap items-center justify-center gap-3 lg:justify-start">
+            <div className="mt-7 grid grid-cols-2 gap-3 md:flex md:flex-wrap md:items-center">
               <a
                 href="#hear-it-first"
-                className="animate-glow-pulse rounded-full bg-[var(--js-gold)] px-7 py-3 font-body text-sm font-medium text-[var(--js-black)] transition-colors hover:bg-[var(--js-gold-light)]"
+                className="animate-glow-pulse rounded-full bg-[var(--js-gold)] px-7 py-3 text-center font-body text-sm font-medium text-[var(--js-black)] transition-colors hover:bg-[var(--js-gold-light)]"
               >
                 Hear It First
               </a>
@@ -97,7 +97,7 @@ export default function Album() {
         </section>
 
         {/* --- Prophecy: the song that started it --- */}
-        <section className="relative overflow-hidden py-32">
+        <section className="relative overflow-hidden py-20 md:py-32">
           <div aria-hidden className="absolute inset-0">
             <img src="/jahspur-hero-02.jpg" alt="" className="animate-kenburns h-full w-full object-cover" style={{ objectPosition: "40% 35%" }} />
             <div className="absolute inset-0 bg-[rgba(11,8,6,0.78)]" />
@@ -106,12 +106,12 @@ export default function Album() {
           </div>
           <Reveal className="relative mx-auto max-w-3xl px-6 text-center">
             <span className="overline">The song that started it</span>
-            <h2 className="font-display mt-5 text-5xl uppercase tracking-[0.14em] text-[var(--js-text)] text-legible sm:text-6xl">{ALBUM.leadSong.title}</h2>
-            <p className="font-accent mt-8 text-2xl italic leading-snug text-white/90 text-legible sm:text-3xl">"{ALBUM.leadSong.story}"</p>
+            <h2 className="font-display mt-4 text-[2.6rem] uppercase tracking-[0.12em] text-[var(--js-text)] text-legible sm:text-6xl">{ALBUM.leadSong.title}</h2>
+            <p className="font-accent mt-6 text-xl italic leading-snug text-white/90 text-legible sm:text-3xl">"{ALBUM.leadSong.story}"</p>
             <p className="font-display mt-4 text-xs uppercase tracking-[0.35em] text-[var(--js-gold)]">— {ARTIST_NAME}</p>
-            <div className="mx-auto mt-12 flex max-w-2xl flex-wrap justify-center gap-x-6 gap-y-3">
+            <div className="mx-auto mt-10 flex max-w-2xl flex-wrap justify-center gap-x-5 gap-y-2.5">
               {ALBUM.leadSong.world.map((w) => (
-                <span key={w} className="font-display text-sm uppercase tracking-[0.3em] text-white/55 text-legible">
+                <span key={w} className="font-display text-xs uppercase tracking-[0.28em] text-white/55 text-legible sm:text-sm">
                   {w}
                 </span>
               ))}
@@ -132,16 +132,16 @@ export default function Album() {
         )}
 
         {/* --- from the stage --- */}
-        <section className="mx-auto max-w-6xl px-6 py-20">
+        <section className="mx-auto max-w-6xl px-6 py-14 md:py-20">
           <Reveal>
-            <p className="font-accent mx-auto mb-10 max-w-2xl text-center text-2xl italic leading-snug text-white/80">{SONG_DESTINY}</p>
-            <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
+            <p className="font-accent mx-auto mb-8 max-w-2xl text-center text-xl italic leading-snug text-white/80 sm:text-2xl md:mb-10">{SONG_DESTINY}</p>
+            <div className="grid grid-cols-2 gap-2 md:grid-cols-3 md:gap-3">
               {[
-                ["/jahspur-hero-04.jpg", "Jah Spur singing with eyes closed, rasta guitar strap"],
                 ["/jahspur-band-strongbacks.jpg", "Jah Spur and The Strongbacks performing outdoors"],
+                ["/jahspur-hero-04.jpg", "Jah Spur singing with eyes closed, rasta guitar strap"],
                 ["/jahspur-hero-02.jpg", "Jah Spur mid-song at an outdoor show"],
               ].map(([src, alt], i) => (
-                <div key={src} className={`overflow-hidden rounded-lg border border-white/10 ${i === 1 ? "col-span-2 md:col-span-1" : ""}`}>
+                <div key={src} className={`overflow-hidden rounded-lg border border-white/10 ${i === 0 ? "col-span-2 md:col-span-1" : ""}`}>
                   <img src={src} alt={alt} loading="lazy" className="aspect-[4/3] h-full w-full object-cover transition-transform duration-700 hover:scale-[1.03]" />
                 </div>
               ))}
@@ -150,8 +150,8 @@ export default function Album() {
         </section>
 
         {/* --- list --- */}
-        <section id="hear-it-first" className="scroll-mt-24 px-6 pb-32 pt-10">
-          <Reveal className="mx-auto max-w-2xl rounded-2xl border border-[var(--js-gold)]/25 bg-black/45 px-6 py-12 text-center backdrop-blur-sm sm:px-12">
+        <section id="hear-it-first" className="scroll-mt-24 px-6 pb-20 pt-4 md:pb-32 md:pt-10">
+          <Reveal className="mx-auto max-w-2xl rounded-2xl border border-[var(--js-gold)]/25 bg-black/45 px-5 py-10 text-center backdrop-blur-sm sm:px-12 sm:py-12">
             <SymbolRow />
             <p className="font-accent mt-6 text-xl italic text-[var(--js-gold-light)]">
               {CALL_TO_ACTION.lead} {CALL_TO_ACTION.follow}

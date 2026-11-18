@@ -22,10 +22,10 @@ export default function Shows() {
       </div>
       <Navbar />
 
-      <main className="relative z-10 mx-auto w-full max-w-3xl flex-1 px-6 pb-28 pt-36 text-center sm:pt-44">
+      <main className="relative z-10 mx-auto w-full max-w-3xl flex-1 px-6 pb-16 pt-28 text-center sm:pb-28 sm:pt-44">
         <Reveal>
           <span className="overline">Shows</span>
-          <h1 className="font-display mt-4 text-4xl text-[var(--js-text)] text-legible sm:text-6xl">Live with {BAND_NAME}</h1>
+          <h1 className="font-display mt-3 text-[2.3rem] leading-tight text-[var(--js-text)] text-legible sm:text-6xl">Live with {BAND_NAME}</h1>
           <div className="tricolor-rule mx-auto mt-6" />
         </Reveal>
 
@@ -50,7 +50,7 @@ export default function Shows() {
           </Reveal>
         ) : (
           <Reveal delay={0.1}>
-            <p data-testid="shows-empty" className="font-accent mx-auto mt-10 max-w-xl text-2xl italic leading-snug text-white/85 text-legible">
+            <p data-testid="shows-empty" className="font-accent mx-auto mt-8 max-w-xl text-xl italic leading-snug text-white/85 text-legible sm:text-2xl">
               New dates are coming. Over a thousand shows so far, across {EPK_REGIONS.slice(0, -1).join(", ")}, and {EPK_REGIONS[EPK_REGIONS.length - 1]}.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
@@ -65,7 +65,7 @@ export default function Shows() {
         )}
 
         <Reveal delay={0.2}>
-          <div className="mx-auto mt-16 max-w-2xl rounded-2xl border border-[var(--js-gold)]/25 bg-black/50 px-6 py-10 backdrop-blur-sm sm:px-10">
+          <div className="mx-auto mt-12 max-w-2xl rounded-2xl border border-[var(--js-gold)]/25 bg-black/50 px-5 py-9 backdrop-blur-sm sm:mt-16 sm:px-10 sm:py-10">
             <SymbolRow />
             <h2 className="font-display mt-5 text-2xl text-[var(--js-text)] sm:text-3xl">Get show alerts</h2>
             <p className="font-body mx-auto mt-3 max-w-md text-sm font-light text-white/65">Be the first to know when and where the music is gathering next.</p>

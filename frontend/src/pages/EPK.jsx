@@ -40,8 +40,7 @@ const GALLERY = [
 const pressPath = (f) => `/press/${f.replace("jahspur-", "jah-spur-press-")}`;
 const PRESS_ZIP = "/press/jah-spur-press-photos.zip";
 
-const field =
-  "rounded-lg border border-white/15 bg-black/40 px-4 py-2.5 font-body text-sm text-white placeholder:text-white/40 focus:border-[var(--js-gold)]/60 focus:outline-none";
+const field = "field";
 
 const BookingForm = () => {
   const [f, setF] = useState({ name: "", email: "", event: "", dateLocation: "", budget: "", details: "" });
@@ -79,7 +78,7 @@ const BookingForm = () => {
   }
 
   return (
-    <form onSubmit={onSubmit} data-testid="booking-form" className="mt-8 grid grid-cols-1 gap-4 text-left sm:grid-cols-2">
+    <form onSubmit={onSubmit} data-testid="booking-form" className="mt-8 grid grid-cols-1 gap-3 text-left sm:grid-cols-2">
       <input required placeholder="First & Last Name*" value={f.name} onChange={set("name")} className={field} />
       <input required type="email" placeholder="Email*" value={f.email} onChange={set("email")} className={field} />
       <input required placeholder="Event/Festival*" value={f.event} onChange={set("event")} className={`${field} sm:col-span-2`} />
@@ -89,7 +88,7 @@ const BookingForm = () => {
       <button
         type="submit"
         disabled={state.status === "submitting"}
-        className="mt-1 rounded-full bg-[var(--js-gold)] px-8 py-3 font-body text-sm font-medium text-[var(--js-black)] transition-colors hover:bg-[var(--js-gold-light)] disabled:opacity-60 sm:col-span-2"
+        className="mt-1 rounded-full bg-[var(--js-gold)] px-8 py-3.5 font-body text-[15px] font-medium text-[var(--js-black)] transition-colors hover:bg-[var(--js-gold-light)] disabled:opacity-60 sm:col-span-2"
       >
         {state.status === "submitting" ? "Sending…" : "Submit Booking Inquiry"}
       </button>
@@ -112,7 +111,7 @@ export default function EPK() {
       </div>
       <Navbar />
 
-      <main className="relative mx-auto max-w-4xl px-6 pb-10 pt-40 text-center">
+      <main className="relative mx-auto max-w-4xl px-6 pb-10 pt-28 text-center sm:pt-40">
         <Reveal>
           <span className="overline">Electronic Press Kit</span>
           <h1 className="font-display text-stone mt-5 text-5xl uppercase tracking-[0.12em] sm:text-7xl">{ARTIST_NAME}</h1>
@@ -133,7 +132,11 @@ export default function EPK() {
         </Reveal>
 
         <Reveal delay={0.1}>
-          <p className="font-display mt-10 text-xs uppercase tracking-[0.4em] text-[var(--js-gold)]">{IDENTITY_WORDS.join(" · ")}</p>
+          <p className="font-display mt-8 text-[0.62rem] uppercase leading-relaxed tracking-[0.4em] text-[var(--js-gold)] sm:mt-10 sm:text-xs">
+            <span className="block sm:inline">{IDENTITY_WORDS.slice(0, 3).join(" · ")}</span>
+            <span className="hidden sm:inline"> · </span>
+            <span className="block sm:inline">{IDENTITY_WORDS.slice(3).join(" · ")}</span>
+          </p>
         </Reveal>
 
         <Reveal delay={0.12}>
@@ -162,7 +165,7 @@ export default function EPK() {
         </Reveal>
       </main>
 
-      <div className="relative mx-auto grid max-w-6xl grid-cols-1 gap-12 px-6 pb-32 lg:grid-cols-[1fr_1.15fr] lg:items-start lg:gap-14">
+      <div className="relative mx-auto grid max-w-6xl grid-cols-1 gap-12 px-6 pb-16 sm:pb-32 lg:grid-cols-[1fr_1.15fr] lg:items-start lg:gap-14">
         <Reveal className="order-2 lg:order-1" delay={0.2}>
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <span className="overline">Press Photos</span>
@@ -231,9 +234,9 @@ export default function EPK() {
           )}
 
           <Reveal delay={0.2}>
-            <div id="booking" className="mt-14 scroll-mt-28 rounded-2xl border border-[var(--js-gold)]/25 bg-black/45 px-5 py-9 backdrop-blur-sm sm:px-8">
+            <div id="booking" className="mt-12 scroll-mt-28 rounded-2xl border border-[var(--js-gold)]/25 bg-black/45 px-5 py-8 backdrop-blur-sm sm:mt-14 sm:px-8 sm:py-9">
               <SymbolRow className="lg:justify-start" />
-              <h2 className="font-display mt-5 text-3xl text-[var(--js-text)]">{BOOKING_STATUS}</h2>
+              <h2 className="font-display mt-5 text-[1.7rem] leading-tight text-[var(--js-text)] sm:text-3xl">{BOOKING_STATUS}</h2>
               <p className="font-body mt-3 text-sm font-light text-white/65">{BOOKING_COPY}</p>
               <BookingForm />
             </div>

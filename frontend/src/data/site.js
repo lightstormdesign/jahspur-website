@@ -45,6 +45,8 @@ export const HERO_LINE = "Spreading love and unity through word and sound.";
 // Benjamin is engraved in jasper (the breastplate stones in Exodus), so his
 // own name is written in stone, which is where the album title comes from.
 // Phrased as his account; keep it in his framing.
+// NOT USED on the site right now: pulled from About pending a direction
+// (candidate for its own album landing page). Kept here as draft copy.
 export const NAME_STORY = {
   title: "Written in Stone",
   body: [

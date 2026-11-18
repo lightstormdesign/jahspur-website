@@ -393,3 +393,34 @@ body {
   from { opacity: 0; transform: translateY(16px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* One form-field style for every form (signup, booking). 16px text on
+   phones so iOS Safari doesn't zoom the page when a field is tapped; 14px
+   from md up. */
+.field {
+  width: 100%;
+  border-radius: 0.875rem;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(0, 0, 0, 0.42);
+  padding: 0.8rem 1.1rem;
+  font-family: "Outfit", sans-serif;
+  font-size: 16px;
+  color: #fff;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+.field::placeholder {
+  color: rgba(255, 255, 255, 0.42);
+}
+.field:focus {
+  outline: none;
+  border-color: rgba(226, 168, 56, 0.7);
+  background: rgba(0, 0, 0, 0.55);
+}
+textarea.field {
+  resize: vertical;
+}
+@media (min-width: 768px) {
+  .field {
+    font-size: 14px;
+  }
+}
