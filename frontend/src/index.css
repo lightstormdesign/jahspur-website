@@ -101,10 +101,16 @@ body {
   text-shadow: 0 2px 28px rgba(0, 0, 0, 0.75), 0 1px 6px rgba(0, 0, 0, 0.65);
 }
 
+/* Positioning: relative by default, but never override an explicit
+   absolute/fixed layer (it used to, which dropped star layers into the page
+   flow and pushed the desktop hero text down). */
+.starfield:not(.absolute):not(.fixed) {
+  position: relative;
+}
+
 /* Desert night sky. Same star-dot technique as the template's starfield,
    warmer tint and a few gold stars. */
 .starfield {
-  position: relative;
   background-color: var(--js-black);
   background-image:
     radial-gradient(1.5px 1.5px at 20% 30%, rgba(255, 248, 232, 0.85), transparent),

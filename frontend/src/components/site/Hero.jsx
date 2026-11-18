@@ -51,10 +51,10 @@ export const Hero = () => {
         style={{ WebkitMaskImage: fade, maskImage: fade }}
       >
         <img
-          src="/jahspur-hero-01.jpg"
+          src="/jahspur-hero-extended.jpg"
           alt="Jah Spur singing and playing guitar on an outdoor stage"
           className="animate-kenburns h-full w-full object-cover"
-          style={{ objectPosition: isMobile ? "4% 0%" : "30% 0%" }}
+          style={{ objectPosition: isMobile ? "6% 20%" : "30% 42%" }}
         />
       </div>
 
