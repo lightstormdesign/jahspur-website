@@ -5,9 +5,9 @@ import {
   ARTIST_NAME,
   HERO_LINE,
   HERO_BIO,
-  HERO_BIO_MOBILE,
   HERO_CTA,
   HERO_IMAGE,
+  HERO_IMAGE_MOBILE,
   HERO_CUTOUT,
   IDENTITY_WORDS,
   SITE_TAGLINE,
@@ -104,7 +104,8 @@ export const EnterHero = () => {
   const light = 0.42 + 0.58 * enter; // brightness
   const blur = (1 - enter) * 6 + (HERO_CUTOUT ? 1.2 * enter : 0); // depth of field once he's separated
   const mist = 1 - ease(seg(p, 0.05, 0.55));
-  const objPos = isMobile ? "12% 50%" : "30% 42%";
+  const objPos = isMobile ? "50% 62%" : "30% 42%";
+  const heroSrc = isMobile && HERO_IMAGE_MOBILE ? HERO_IMAGE_MOBILE : HERO_IMAGE;
 
   // Tilt: small, in degrees, with layers shifting in opposite directions.
   const rx = -tilt.y * 2.2;
@@ -122,11 +123,12 @@ export const EnterHero = () => {
         {/* --- photo layers --- */}
         <div className="absolute inset-0" style={{ transform: `rotateX(${rx}deg) rotateY(${ry}deg)`, transformStyle: "preserve-3d" }}>
           <img
-            src={HERO_IMAGE}
+            src={heroSrc}
             alt="Jah Spur singing and playing guitar on an outdoor stage"
             className="absolute inset-0 h-full w-full object-cover will-change-transform"
             style={{
               objectPosition: objPos,
+              transformOrigin: isMobile ? "45% 62%" : "50% 50%",
               transform: `scale(${bgScale}) translate3d(${-tilt.x * 6}px, ${-tilt.y * 4}px, 0)`,
               filter: `brightness(${light}) blur(${blur}px) saturate(${0.8 + 0.25 * enter})`,
             }}
@@ -163,7 +165,7 @@ export const EnterHero = () => {
           style={{
             opacity: textIn,
             background: isMobile
-              ? "linear-gradient(180deg, rgba(11,8,6,0) 35%, rgba(11,8,6,0.78) 62%, rgba(11,8,6,0.95) 100%)"
+              ? "linear-gradient(180deg, rgba(11,8,6,0.9) 0%, rgba(11,8,6,0.72) 30%, rgba(11,8,6,0.25) 50%, rgba(11,8,6,0) 60%, rgba(11,8,6,0) 85%, rgba(11,8,6,0.55) 100%)"
               : "linear-gradient(90deg, rgba(11,8,6,0) 32%, rgba(11,8,6,0.66) 58%, rgba(11,8,6,0.88) 100%)",
           }}
         />
@@ -186,22 +188,22 @@ export const EnterHero = () => {
 
         {/* --- hero text, over the photo --- */}
         <div
-          className="absolute inset-0 flex items-end md:items-center md:justify-end"
+          className="absolute inset-0 flex items-start md:items-center md:justify-end"
           style={{ opacity: textIn, pointerEvents: textIn > 0.6 ? "auto" : "none" }}
         >
-          <div className="w-full px-6 pb-10 md:w-[48%] md:px-0 md:pb-0 md:pr-[6vw]" style={{ transform: `translateY(${(1 - textIn) * 24}px)` }}>
-            <p className="font-display text-[0.62rem] uppercase leading-relaxed tracking-[0.4em] text-[var(--js-gold)] md:text-xs md:tracking-[0.45em]">
+          <div className="w-full px-6 pt-[max(84px,11svh)] max-md:[@media(max-height:720px)]:pt-[72px] md:w-[48%] md:px-0 md:pt-0 md:pr-[6vw]" style={{ transform: `translateY(${(1 - textIn) * 24}px)` }}>
+            <p className="font-display text-[0.62rem] uppercase leading-relaxed tracking-[0.4em] text-[var(--js-gold)] md:text-xs md:tracking-[0.45em] max-md:[@media(max-height:720px)]:hidden">
               <span className="block md:inline">{IDENTITY_WORDS.slice(0, 3).join(" · ")}</span>
               <span className="hidden md:inline"> · </span>
               <span className="block md:inline">{IDENTITY_WORDS.slice(3).join(" · ")}</span>
             </p>
-            <h1 className="font-display text-stone mt-3 text-[3.4rem] uppercase leading-none tracking-[0.1em] md:text-8xl md:tracking-[0.12em]">{ARTIST_NAME}</h1>
+            <h1 className="font-display text-stone mt-3 max-md:[@media(max-height:720px)]:mt-0 text-[clamp(2.6rem,7.2svh,3.4rem)] uppercase leading-none tracking-[0.1em] md:text-8xl md:tracking-[0.12em]">{ARTIST_NAME}</h1>
             <div className="tricolor-rule mt-5" />
-            <p className="font-accent mt-5 text-[1.6rem] italic leading-snug text-[var(--js-text)] text-legible md:text-3xl">{HERO_LINE}</p>
-            <p className="font-body mt-4 max-w-xl text-sm font-light leading-relaxed text-white/80 text-legible md:text-[0.95rem]">
-              {isMobile ? HERO_BIO_MOBILE : HERO_BIO}
-            </p>
-            <div className="mt-7 grid grid-cols-2 gap-3 md:flex md:flex-wrap md:items-center">
+            <p className="font-accent mt-4 text-[1.45rem] max-md:[@media(max-height:720px)]:mt-3 max-md:[@media(max-height:720px)]:text-[1.2rem] italic leading-snug text-[var(--js-text)] text-legible md:mt-5 md:text-3xl">{HERO_LINE}</p>
+            {/* Phones: the bio is dropped here so the text stays in the
+                canopy, clear of his face; it's on About and in the EPK. */}
+            {!isMobile && <p className="font-body mt-4 max-w-xl text-sm font-light leading-relaxed text-white/80 text-legible md:text-[0.95rem]">{HERO_BIO}</p>}
+            <div className="mt-5 grid md:mt-7 grid-cols-2 gap-3 md:flex md:flex-wrap md:items-center">
               <Link
                 to={HERO_CTA.to}
                 data-testid="hero-cta"

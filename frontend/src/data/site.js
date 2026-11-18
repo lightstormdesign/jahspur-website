@@ -76,6 +76,10 @@ export const HERO_CTA = { label: "My Story", to: "/about" };
 // Hero photo: jah1, extended upward in Canva for headroom (3000x2800 source,
 // 2400px web copy).
 export const HERO_IMAGE = "/jahspur-hero-extended.jpg";
+// Phones get their own portrait crop (1080x1920, made in Canva): trees
+// across the top, him in the lower half. The hero text sits up in the
+// canopy on phones so his face stays clear.
+export const HERO_IMAGE_MOBILE = "/jahspur-hero-mobile.jpg";
 // Optional 3D depth layer: the SAME canvas with the background removed (him
 // only, transparent PNG, same size and position). When set, he pushes in
 // faster than the trees behind him for real parallax. Null = single layer.
