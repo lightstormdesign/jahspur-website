@@ -9,6 +9,8 @@ import {
   HERO_IMAGE,
   HERO_IMAGE_MOBILE,
   HERO_CUTOUT,
+  HERO_CUTOUT_MOBILE,
+  HERO_PLATE_MOBILE,
   IDENTITY_WORDS,
   SITE_TAGLINE,
   SITE_LOCATION,
@@ -95,6 +97,7 @@ export const EnterHero = () => {
     };
   }, [reduce]);
 
+  const cutout = isMobile ? HERO_CUTOUT_MOBILE : HERO_CUTOUT;
   const enter = ease(seg(p, 0, 0.6)); // moving into the scene
   const thresholdOut = ease(seg(p, 0.02, 0.22));
   const textIn = ease(seg(p, 0.5, 0.78));
@@ -102,10 +105,10 @@ export const EnterHero = () => {
   const bgScale = 1.04 + 0.1 * enter;
   const fgScale = 1.04 + 0.18 * enter;
   const light = 0.42 + 0.58 * enter; // brightness
-  const blur = (1 - enter) * 6 + (HERO_CUTOUT ? 1.2 * enter : 0); // depth of field once he's separated
+  const blur = (1 - enter) * 6 + (cutout ? 1.6 * enter : 0); // depth of field once he's separated
   const mist = 1 - ease(seg(p, 0.05, 0.55));
   const objPos = isMobile ? "50% 62%" : "30% 42%";
-  const heroSrc = isMobile && HERO_IMAGE_MOBILE ? HERO_IMAGE_MOBILE : HERO_IMAGE;
+  const heroSrc = isMobile ? (cutout && HERO_PLATE_MOBILE) || HERO_IMAGE_MOBILE || HERO_IMAGE : HERO_IMAGE;
 
   // Tilt: small, in degrees, with layers shifting in opposite directions.
   const rx = -tilt.y * 2.2;
@@ -133,15 +136,15 @@ export const EnterHero = () => {
               filter: `brightness(${light}) blur(${blur}px) saturate(${0.8 + 0.25 * enter})`,
             }}
           />
-          {HERO_CUTOUT && (
+          {cutout && (
             <img
-              src={HERO_CUTOUT}
+              src={cutout}
               alt=""
               aria-hidden
               className="absolute inset-0 h-full w-full object-cover will-change-transform"
               style={{
                 objectPosition: objPos,
-                transformOrigin: isMobile ? "25% 45%" : "28% 40%",
+                transformOrigin: isMobile ? "45% 62%" : "28% 40%",
                 transform: `scale(${fgScale}) translate3d(${tilt.x * 10}px, ${tilt.y * 6}px, 0)`,
                 filter: `brightness(${light}) blur(${(1 - enter) * 6}px) saturate(${0.8 + 0.25 * enter})`,
               }}

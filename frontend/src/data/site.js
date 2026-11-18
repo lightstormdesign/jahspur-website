@@ -84,6 +84,13 @@ export const HERO_IMAGE_MOBILE = "/jahspur-hero-mobile.jpg";
 // only, transparent PNG, same size and position). When set, he pushes in
 // faster than the trees behind him for real parallax. Null = single layer.
 export const HERO_CUTOUT = null;
+// Phone depth layers, made in Canva on the 1080x1920 phone canvas:
+// the cutout is Jah with the mic and stand (BG Remover), and the plate is the
+// same frame with him and the mic erased. Until the plate exists the full
+// phone photo stands in as the background; the push-in scales about a point
+// inside him, so the background copy of him stays hidden behind the cutout.
+export const HERO_CUTOUT_MOBILE = "/jahspur-hero-mobile-cutout.webp";
+export const HERO_PLATE_MOBILE = null;
 
 // Small announcement bubble on the Hero (one-line edit when there's news).
 export const HERO_ANNOUNCEMENT = {
