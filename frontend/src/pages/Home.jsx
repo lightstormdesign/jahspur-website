@@ -1,21 +1,25 @@
 import { Link } from "react-router-dom";
 import { Navbar } from "@/components/site/Navbar";
 import { Footer } from "@/components/site/Footer";
-import { DawnExperience } from "@/components/site/DawnExperience";
+import { Hero } from "@/components/site/Hero";
 import { AlbumTablet } from "@/components/site/AlbumTablet";
 import { SignupForm } from "@/components/site/SignupForm";
 import { Reveal } from "@/components/site/Reveal";
 import { SymbolRow } from "@/components/site/Glyphs";
-import { ALBUM, LASTING_MESSAGE } from "@/data/site";
+import { ALBUM, LASTING_MESSAGE, CALL_TO_ACTION } from "@/data/site";
 
-// Unlike Sierra's site (Portal -> Hero is the entire homepage), Jah's goals
-// are a 5,000-person list and album support, so the hero hands off to one
-// short section that does both before the footer: the album, then the list.
+// Hero-first: the visitor lands on Jah himself, then one section that serves
+// his two main goals (album support, a 5,000-person list), then the footer.
+//
+// The illustrated dawn-world intro (DawnExperience.jsx, half-moon night ->
+// misty sunrise over the mountains -> hero) is built and kept, but off: it's
+// the paid "World upgrade" beyond this package. To turn it on, replace
+// <Hero /> with <DawnExperience /> (import from components/site).
 export default function Home() {
   return (
     <div data-testid="home-page" className="relative bg-[var(--js-black)]">
       <Navbar />
-      <DawnExperience />
+      <Hero />
 
       <section className="starfield relative z-10 overflow-hidden px-6 py-28">
         <div aria-hidden className="haze-drift" />
@@ -30,7 +34,10 @@ export default function Home() {
             <h2 className="font-display text-stone mt-4 text-4xl uppercase tracking-[0.1em] sm:text-5xl">{ALBUM.title}</h2>
             <div className="tricolor-rule mx-auto mt-5 lg:mx-0" />
             <p className="font-accent mt-6 text-xl leading-relaxed text-white/80">{ALBUM.description}</p>
-            <p className="font-body mt-6 text-sm font-light text-white/60">
+            <p className="font-accent mt-7 text-2xl italic leading-snug text-[var(--js-gold-light)]">
+              {CALL_TO_ACTION.lead} {CALL_TO_ACTION.follow}
+            </p>
+            <p className="font-body mt-3 text-sm font-light text-white/60">
               Join the list to hear it first, and to help carry it into the world.
             </p>
             <SignupForm source="home" cta="Hear It First" className="mx-auto mt-5 max-w-lg lg:mx-0" />

@@ -4,7 +4,7 @@ import { ChevronDown } from "lucide-react";
 import { Navbar } from "@/components/site/Navbar";
 import { Footer } from "@/components/site/Footer";
 import { Fireflies } from "@/components/site/Fireflies";
-import { SOCIALS } from "@/data/site";
+import { SOCIALS, NAME_STORY, CALL_TO_ACTION } from "@/data/site";
 import { useIsMobile } from "@/hooks/useIsMobile";
 
 // Mobile-only discrete slide gesture tuning. Desktop's continuous
@@ -170,11 +170,20 @@ const STAGES = [
     showChevron: true,
   },
   {
+    id: "in-stone",
+    title: NAME_STORY.title,
+    media: "/jahspur-hero-04.jpg",
+    alt: "Jah Spur singing with his eyes closed",
+    body: NAME_STORY.body,
+    showChevron: true,
+  },
+  {
     id: "now",
     media: "/jahspur-hero-03.jpg",
     alt: "Jah Spur singing on stage",
     body: [
-      "It is imperative that I share my music with the world. That's why I'm on this journey: to release my first album, Written in Stone.",
+      "It is imperative that I share my music with the world. My debut album, Written in Stone, is my chance to introduce myself the way I mean to be known.",
+      "Every song has its own destiny. Like water, it finds the crevices and makes its way.",
     ],
     showChevron: true,
   },
@@ -363,7 +372,7 @@ export default function About() {
                     />
                     <img src="/jahspur-logo-light.png" alt="" aria-hidden className="h-24 w-auto object-contain opacity-95" />
                     <h2 className="font-display mt-8 max-w-xl text-3xl font-normal leading-tight text-white sm:text-4xl text-legible">
-                      Life is a journey, and to walk it is your destiny. <span className="text-gold-grad">Walk a while with me.</span>
+                      {CALL_TO_ACTION.lead} <span className="text-gold-grad">{CALL_TO_ACTION.follow}</span>
                     </h2>
                     <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
                       <Link

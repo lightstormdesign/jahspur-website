@@ -8,12 +8,14 @@ export const ARTIST_NAME = "Jah Spur";
 export const BAND_NAME = "The Strongbacks";
 export const SITE_LOCATION = "Taos, New Mexico";
 
-// Top-level navigation. No Tour or Shop pages yet: he has no current dates
-// and no merch (intake: "None" / "No"). Add them back here when he does.
+// Top-level navigation. Shows is in the agreement's scope ("show dates
+// list") even though he has no dates yet; it reads "coming soon" until
+// SHOWS has entries. No Shop: no merch yet (intake: "No").
 export const NAV_LINKS = [
   { label: "Home", to: "/" },
   { label: "Album", to: "/album" },
   { label: "About", to: "/about" },
+  { label: "Shows", to: "/shows" },
   { label: "Community", to: "/community" },
   { label: "EPK", to: "/epk" },
   { label: "Contact", to: "/contact" },
@@ -36,6 +38,30 @@ export const SPUR_DEFINITION = {
 export const LASTING_MESSAGE = ["Life is a journey, and to walk it is your destiny.", "The Presence is a gift."];
 
 export const HERO_LINE = "Spreading love and unity through word and sound.";
+
+// --- From the discovery call (Trevor's notes) ------------------------------
+
+// The name story. Jah Spur: "spur," to urge into action. And, per Ben,
+// Benjamin is engraved in jasper (the breastplate stones in Exodus), so his
+// own name is written in stone, which is where the album title comes from.
+// Phrased as his account; keep it in his framing.
+export const NAME_STORY = {
+  title: "Written in Stone",
+  body: [
+    "Jah Spur. A spur urges you into action. Say it slowly and you'll hear jasper, too.",
+    "In Exodus, the names of the tribes were engraved in stone on the high priest's breastplate, and Benjamin, my name, is engraved in jasper. My name has been written in stone the whole time. My whole life has felt like a prophecy unfolding.",
+  ],
+};
+
+// His call to action, in his words. Used to lead into signups.
+export const CALL_TO_ACTION = {
+  lead: "Lay it down at the altar.",
+  follow: "Start doing what you're meant to do.",
+};
+
+// "Songs have their own destiny," and they find their way like water
+// through the crevices.
+export const SONG_DESTINY = "Every song has its own destiny. Like water, it finds the crevices and makes its way.";
 
 export const HERO_BIO =
   "Jah Spur is a roots and culture musician from Taos, New Mexico. Raised in a family where music runs back generations, and steeped in Jamaican music since the age of thirteen, he has given more than half his life to bringing roots music to the people: a thousand-plus performances across Northern New Mexico, both coasts, and Hawaii. With his band, The Strongbacks, and a studio of his own, he is now bringing his debut album, Written in Stone, to the world.";
@@ -62,7 +88,7 @@ export const ALBUM = {
   // Drafted from his answers: the album as the culmination of a decade of
   // songwriting about his "experiences, teachings, and creation".
   description:
-    "A decade of songs about experience, teaching, and creation, carved down into one record. Written in Stone is Jah Spur's first full-length album, recorded in his own studio with The Strongbacks.",
+    "Half a lifetime of writing roots music, carved down into one record. Written in Stone is Jah Spur's debut: his chance to curate how he introduces himself to the world, recorded in his own studio with The Strongbacks.",
   // "Prophecy" is the song he chose to represent him, and the one that
   // started the vision to release his music.
   leadSong: {
@@ -88,6 +114,16 @@ export const PRESALE_URL = null;
 // Add { label, href } entries here and they appear on Album + EPK.
 export const STREAMING_LINKS = [];
 
+// PENDING: he wants links to videos (call notes) but none were provided.
+// Add { title, youtubeId } (or { title, href }) and a Videos section appears
+// on the Album page and EPK.
+export const VIDEOS = [];
+
+// PENDING: show dates. The agreement includes a show-dates list; he had none
+// on the intake. Add { date: "Dec 12", event, location, href? } entries and
+// the Shows page lists them; empty shows a "booking now" state.
+export const SHOWS = [];
+
 // --- Community -------------------------------------------------------------
 
 // His 12-month goal, verbatim intent: "Capture a list of up to 5,000 people."
@@ -97,15 +133,16 @@ export const COMMUNITY_GOAL = 5000;
 // Formspree (if set) or opens a pre-filled email to him.
 export const LAYLO_URL = null;
 
-// Community offers he checked on the intake: Membership, Skool, GoFundMe,
-// Low-barrier Offer. No links yet, so each shows as "coming soon" until an
+// Community offers he checked on the intake (Membership, Skool, GoFundMe,
+// Low-barrier Offer), with Membership as Patreon per the call notes
+// ("Subscribe/patreon"). No links yet, so each shows as "coming soon" until an
 // href is filled in.
 export const COMMUNITY_OFFERS = [
   {
     key: "membership",
-    title: "Membership",
+    title: "Patreon",
     blurb: "Walk closer with the music: early listens, studio sessions, and a seat at the table as the album comes together.",
-    href: null,
+    href: null, // PENDING: Patreon URL
   },
   {
     key: "skool",

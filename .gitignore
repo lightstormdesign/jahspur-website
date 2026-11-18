@@ -33,3 +33,6 @@ yarn-error.log*
 credentials.json
 *.key
 .credentials
+
+# local copies of client originals (not deployed)
+originals/

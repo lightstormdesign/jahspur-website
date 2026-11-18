@@ -7,6 +7,7 @@ import Album from "@/pages/Album";
 import Community from "@/pages/Community";
 import EPK from "@/pages/EPK";
 import Contact from "@/pages/Contact";
+import Shows from "@/pages/Shows";
 import { TrackingPixel } from "@/components/site/TrackingPixel";
 import { GlowCursor } from "@/components/site/GlowCursor";
 import { GlyphField } from "@/components/site/GlyphField";
@@ -31,6 +32,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/album" element={<Album />} />
+          <Route path="/shows" element={<Shows />} />
           <Route path="/community" element={<Community />} />
           <Route path="/epk" element={<EPK />} />
           <Route path="/contact" element={<Contact />} />

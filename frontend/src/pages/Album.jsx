@@ -7,7 +7,8 @@ import { AlbumTablet } from "@/components/site/AlbumTablet";
 import { SignupForm } from "@/components/site/SignupForm";
 import { SymbolRow } from "@/components/site/Glyphs";
 import { Fireflies } from "@/components/site/Fireflies";
-import { ALBUM, GOFUNDME_URL, PRESALE_URL, STREAMING_LINKS, ARTIST_NAME, BAND_NAME } from "@/data/site";
+import { VideoGrid } from "@/components/site/VideoGrid";
+import { ALBUM, GOFUNDME_URL, PRESALE_URL, STREAMING_LINKS, VIDEOS, ARTIST_NAME, BAND_NAME, SONG_DESTINY, CALL_TO_ACTION } from "@/data/site";
 
 // The album page. Sierra's version is a CD-unboxing of a released record;
 // Jah's album isn't out yet and has no artwork, so this page does what his
@@ -118,9 +119,22 @@ export default function Album() {
           </Reveal>
         </section>
 
+        {/* --- videos (once he sends links) --- */}
+        {VIDEOS.length > 0 && (
+          <section className="mx-auto max-w-6xl px-6 pt-20">
+            <Reveal className="text-center">
+              <span className="overline">Watch</span>
+            </Reveal>
+            <Reveal delay={0.1}>
+              <VideoGrid className="mt-8" />
+            </Reveal>
+          </section>
+        )}
+
         {/* --- from the stage --- */}
         <section className="mx-auto max-w-6xl px-6 py-20">
           <Reveal>
+            <p className="font-accent mx-auto mb-10 max-w-2xl text-center text-2xl italic leading-snug text-white/80">{SONG_DESTINY}</p>
             <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
               {[
                 ["/jahspur-hero-04.jpg", "Jah Spur singing with eyes closed, rasta guitar strap"],
@@ -139,7 +153,10 @@ export default function Album() {
         <section id="hear-it-first" className="scroll-mt-24 px-6 pb-32 pt-10">
           <Reveal className="mx-auto max-w-2xl rounded-2xl border border-[var(--js-gold)]/25 bg-black/45 px-6 py-12 text-center backdrop-blur-sm sm:px-12">
             <SymbolRow />
-            <h2 className="font-display mt-6 text-3xl text-[var(--js-text)] sm:text-4xl">Be the first to hear it</h2>
+            <p className="font-accent mt-6 text-xl italic text-[var(--js-gold-light)]">
+              {CALL_TO_ACTION.lead} {CALL_TO_ACTION.follow}
+            </p>
+            <h2 className="font-display mt-3 text-3xl text-[var(--js-text)] sm:text-4xl">Be the first to hear it</h2>
             <p className="font-body mx-auto mt-4 max-w-md text-sm font-light leading-relaxed text-white/65">
               First listens from Written in Stone, word from the studio, and the shows and gatherings where the music lives.
             </p>

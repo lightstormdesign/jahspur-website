@@ -5,6 +5,7 @@ import { Footer } from "@/components/site/Footer";
 import { Reveal } from "@/components/site/Reveal";
 import { MailtoFallback } from "@/components/site/MailtoFallback";
 import { SymbolRow } from "@/components/site/Glyphs";
+import { VideoGrid } from "@/components/site/VideoGrid";
 import { submitForm } from "@/utils/forms";
 import {
   ARTIST_NAME,
@@ -212,6 +213,10 @@ export default function EPK() {
             <p className="font-accent mt-5 text-lg italic text-white/65">
               Proudest moment: "{EPK_PROUDEST}"
             </p>
+          </Reveal>
+
+          <Reveal delay={0.16}>
+            <VideoGrid className="mt-10" />
           </Reveal>
 
           {PRESS_QUOTES.length > 0 && (

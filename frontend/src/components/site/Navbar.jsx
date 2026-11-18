@@ -34,11 +34,11 @@ export const Navbar = () => {
   const isHome = location.pathname === "/";
 
   useEffect(() => {
-    // Home: stay clear through the whole dawn sequence (its sky is the
-    // header's backdrop); every other page: solid after the first 40px.
+    // Home: stay clear while the hero (or the dawn intro, if switched on)
+    // is the backdrop; every other page: solid after the first 40px.
     const onScroll = () => {
-      const dawn = document.querySelector("[data-testid=dawn-experience]");
-      const limit = dawn ? dawn.offsetHeight - window.innerHeight * 0.5 : 40;
+      const clearZone = document.querySelector("[data-nav-clear], [data-testid=dawn-experience]");
+      const limit = clearZone ? clearZone.offsetHeight - window.innerHeight * 0.5 : 40;
       setScrolled(window.scrollY > limit);
     };
     onScroll();
