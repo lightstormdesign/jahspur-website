@@ -90,7 +90,7 @@ export const HERO_CUTOUT = null;
 // phone photo stands in as the background; the push-in scales about a point
 // inside him, so the background copy of him stays hidden behind the cutout.
 export const HERO_CUTOUT_MOBILE = "/jahspur-hero-mobile-cutout.webp";
-export const HERO_PLATE_MOBILE = null;
+export const HERO_PLATE_MOBILE = "/jahspur-hero-mobile-plate.jpg";
 
 // Small announcement bubble on the Hero (one-line edit when there's news).
 export const HERO_ANNOUNCEMENT = {
