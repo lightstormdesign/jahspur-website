@@ -7,10 +7,7 @@ export const Footer = () => {
   return (
     <footer data-testid="site-footer" className="relative z-10 border-t border-white/10 bg-[rgba(11,8,6,0.88)] py-10 backdrop-blur-md sm:py-14">
       <div className="mx-auto flex max-w-7xl flex-col items-center gap-6 px-6 sm:gap-7 lg:px-8">
-        {/* not on Home, where the intro just above already shows it */}
-        {location.pathname !== "/" && (
-          <img src="/jahspur-logo-light.png" alt="Jah Spur and The Strongbacks" className="h-20 w-auto object-contain sm:h-24" />
-        )}
+        <img src="/jahspur-logo-light.png" alt="Jah Spur and The Strongbacks" className="h-20 w-auto object-contain sm:h-24" />
 
         <p className="font-accent max-w-md text-center text-base italic text-white/55">
           {LASTING_MESSAGE[0]} {LASTING_MESSAGE[1]}
