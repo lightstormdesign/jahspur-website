@@ -5,6 +5,7 @@ import { NAV_LINKS, ARTIST_NAME } from "@/data/site";
 import { CubeColor } from "./Glyphs";
 import { SoundButton } from "./SoundButton";
 import { requestMotion } from "@/utils/motion";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 const NavLink = ({ to, label, active, mobile }) => (
   <Link
@@ -49,6 +50,10 @@ export const Navbar = () => {
   }, [location.pathname]);
 
   const clear = isHome && !scrolled && !open;
+  const isMobile = useIsMobile();
+  // Desktop home: the hero's big logo is the logo (as on Trev's), so the
+  // header's small one waits until you've scrolled past it. Phones keep it.
+  const hideWordmark = clear && !isMobile;
 
   return (
     <header
@@ -61,7 +66,14 @@ export const Navbar = () => {
         {/* top left, as on Trev's: the speaker, then his logo */}
         <div className="flex items-center gap-2">
           <SoundButton />
-          <Link to="/" data-testid="nav-link-wordmark" className="flex items-center gap-3" aria-label={`${ARTIST_NAME}, home`}>
+          <Link
+            to="/"
+            data-testid="nav-link-wordmark"
+            className={`flex items-center gap-3 transition-opacity duration-500 ${hideWordmark ? "pointer-events-none opacity-0" : "opacity-100"}`}
+            aria-label={`${ARTIST_NAME}, home`}
+            aria-hidden={hideWordmark || undefined}
+            tabIndex={hideWordmark ? -1 : undefined}
+          >
             <CubeColor size={30} className="animate-wordmark-float" />
             <span className="font-display text-lg uppercase tracking-[0.28em] text-[var(--js-text)] [text-shadow:0_1px_12px_rgba(0,0,0,0.6)]">{ARTIST_NAME}</span>
           </Link>

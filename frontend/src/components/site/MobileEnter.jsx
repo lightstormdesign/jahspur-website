@@ -120,14 +120,17 @@ export const MobileEnter = () => {
           meRef.current.style.transform = `translate3d(${(px * D * m).toFixed(1)}px, ${((1 - py) * 8 * m - 30 * e * m).toFixed(1)}px, 0) scale(${meScale.toFixed(4)})`;
         if (plateRef.current) {
           plateRef.current.style.transform = `translate3d(${(-px * D * 0.45 * m).toFixed(1)}px, ${(-py * 3 * m).toFixed(1)}px, 0) scale(${(1.08 + 0.015 * py * m + 0.08 * e * m).toFixed(4)})`;
-          plateRef.current.style.filter = `blur(${(0.6 + 1.8 * e).toFixed(2)}px)`;
+          plateRef.current.style.filter = `blur(${(2.2 + 1.8 * e).toFixed(2)}px) brightness(0.72)`;
         }
       } else if (plateRef.current) {
         // one layer: a gentler version of his movement
         plateRef.current.style.transform = `translate3d(${(px * D * 0.6 * m).toFixed(1)}px, ${((1 - py) * 5 * m - 20 * e * m).toFixed(1)}px, 0) scale(${(1.06 + 0.035 * py * m + 0.16 * e * m).toFixed(4)})`;
       }
       if (shadeRef.current) shadeRef.current.style.opacity = (0.15 + 0.85 * smooth(clamp((sp - 0.45) / 0.55))).toFixed(3);
-      if (cueRef.current) cueRef.current.style.opacity = (1 - clamp(sp / 0.12)).toFixed(3);
+      if (cueRef.current) {
+        cueRef.current.style.opacity = (1 - clamp(sp / 0.14)).toFixed(3);
+        cueRef.current.style.translate = `${(px * 6 * m).toFixed(1)}px ${(-e * 40).toFixed(1)}px`;
+      }
 
       raf = requestAnimationFrame(frame);
     };
@@ -162,25 +165,46 @@ export const MobileEnter = () => {
         {/* warm grade, a little mist */}
         <div aria-hidden className="pointer-events-none absolute inset-0 mix-blend-soft-light" style={{ background: "rgba(226,140,60,0.18)" }} />
         <div aria-hidden className="mist-a pointer-events-none absolute top-[30%] h-[40%]" style={{ opacity: 0.35 }} />
-        {/* Trev's vignette: a dark fall-off from the top over the canopy, and
-            darkened sides/corners; plus a soft floor so the cue reads */}
-        <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[46svh]" style={{ background: "linear-gradient(to bottom, rgba(10,6,4,0.55) 0%, rgba(10,6,4,0.3) 42%, transparent 100%)" }} />
-        <div aria-hidden className="pointer-events-none absolute inset-0" style={{ background: "radial-gradient(ellipse 85% 75% at 50% 48%, transparent 50%, rgba(10,6,4,0.55) 100%)" }} />
-        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-[34svh]" style={{ background: "linear-gradient(to top, rgba(10,6,4,0.6) 0%, rgba(10,6,4,0.25) 50%, transparent 100%)" }} />
+        {/* Vignette (Soleil's + Trev's): a dark fall-off from the top and a
+            heavier one from the bottom, darkened sides; on desktop also a
+            shade over the right, where the logo and the cue sit */}
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[48%]" style={{ background: "linear-gradient(to bottom, rgba(10,4,4,0.72) 0%, rgba(10,4,4,0.38) 45%, transparent 100%)" }} />
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-[34%]" style={{ background: "linear-gradient(to top, rgba(10,4,4,0.8) 0%, rgba(10,4,4,0.4) 45%, transparent 100%)" }} />
+        <div aria-hidden className="pointer-events-none absolute inset-0" style={{ background: "radial-gradient(ellipse 85% 75% at 50% 48%, transparent 45%, rgba(10,4,4,0.6) 100%)" }} />
+        {!isMobile && (
+          <div aria-hidden className="pointer-events-none absolute inset-0" style={{ background: "linear-gradient(to right, transparent 38%, rgba(10,4,4,0.35) 62%, rgba(10,4,4,0.55) 100%)" }} />
+        )}
         {/* darkens as you scroll on, so the story below arrives out of the dark */}
         <div ref={shadeRef} aria-hidden className="pointer-events-none absolute inset-0 bg-[var(--js-black)]" style={{ opacity: 0.15 }} />
 
-        {/* Scroll to enter, Trev's "Tap to Enter" type and placement: centred,
-            13% up from the bottom, with a dark halo behind and a breathing
-            gold glow so it reads over the photo */}
-        <div ref={cueRef} className="pointer-events-none absolute inset-x-0 flex flex-col items-center" style={{ bottom: "max(56px, 13svh)", transform: "translateY(50%)" }}>
-          <div className="js-enter">
-            <span className="halo" aria-hidden />
-            <span className="glow" aria-hidden>Scroll to Enter</span>
-            <span className="word">Scroll to Enter</span>
+        {isMobile ? (
+          // Phones (Trev's placement): Scroll to Enter up top, in the space
+          // between the header logo and the top of his head
+          <div ref={cueRef} className="pointer-events-none absolute inset-x-0 flex justify-center" style={{ top: "25.5svh", transform: "translateY(-50%)" }}>
+            <div className="relative flex justify-center">
+              <div aria-hidden className="js-pool absolute left-1/2 top-1/2 h-[260%] w-[130%] -translate-x-1/2 -translate-y-1/2" />
+              <span className="relative flex items-center gap-3" style={{ animation: "breathe 3.2s ease-in-out infinite" }}>
+                <span aria-hidden className="h-px w-7 bg-gradient-to-r from-transparent to-white/90" />
+                <span className="js-cue text-[1.3rem]">Scroll to Enter</span>
+                <span aria-hidden className="h-px w-7 bg-gradient-to-l from-transparent to-white/90" />
+              </span>
+            </div>
           </div>
-          <ChevronDown size={20} className="mt-3 text-[var(--js-gold-light)] [filter:drop-shadow(0_1px_6px_rgba(0,0,0,0.7))]" style={{ animation: "scroll-cue 2.2s ease-out infinite" }} />
-        </div>
+        ) : (
+          // Desktop: his logo, big, on the right, with Scroll to Enter under
+          // it as the subtitle (him on the left, the sign on the right)
+          <div ref={cueRef} className="pointer-events-none absolute inset-y-0 right-0 flex w-[38%] flex-col items-center justify-center">
+            <div className="relative flex flex-col items-center">
+              <div aria-hidden className="js-pool absolute left-1/2 top-1/2 h-[125%] w-[150%] -translate-x-1/2 -translate-y-1/2" />
+              <img src="/jahspur-logo-light.png" alt="Jah Spur and The Strongbacks" className="js-logo-glow relative h-auto w-[min(22rem,25vw,42vh)]" />
+              <span className="relative mt-[clamp(1.4rem,4vh,2.4rem)] flex items-center gap-5" style={{ animation: "breathe 3.2s ease-in-out infinite" }}>
+                <span aria-hidden className="h-px w-10 bg-gradient-to-r from-transparent to-white/90" />
+                <span className="js-cue text-[clamp(1.2rem,1.6vw,1.9rem)]">Scroll to Enter</span>
+                <span aria-hidden className="h-px w-10 bg-gradient-to-l from-transparent to-white/90" />
+              </span>
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );
