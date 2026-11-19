@@ -5,6 +5,7 @@ import { NAV_LINKS, ARTIST_NAME } from "@/data/site";
 import { CubeColor } from "./Glyphs";
 import { SoundButton } from "./SoundButton";
 import { requestMotion } from "@/utils/motion";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 const NavLink = ({ to, label, active, mobile }) => (
   <Link
@@ -49,9 +50,11 @@ export const Navbar = () => {
   }, [location.pathname]);
 
   const clear = isHome && !scrolled && !open;
-  // The header's cube + JAH SPUR wordmark shows on every page and device,
-  // including the desktop home alongside the hero's big logo.
-  const hideWordmark = false;
+  // Desktop home shows his logo once, big, in the hero; so its header is
+  // just the speaker (and the links). Every other page, and phones, keep
+  // the cube + JAH SPUR wordmark top left.
+  const isMobile = useIsMobile();
+  const hideWordmark = isHome && !isMobile;
 
   return (
     <header

@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Reveal } from "./Reveal";
-import { HERO_LINE, HERO_BIO, HERO_BIO_MOBILE } from "@/data/site";
+import { HERO_LINE, HERO_BIO, HERO_BIO_MOBILE, SITE_TAGLINE, SITE_LOCATION } from "@/data/site";
 import { useIsMobile } from "@/hooks/useIsMobile";
 
 // What you land on after scrolling past his picture, full screen: his
@@ -40,10 +40,19 @@ export const HomeIntro = () => {
       {/* a soft dark pool behind the words */}
       <div aria-hidden className="js-pool absolute left-1/2 top-1/2 h-[80%] w-[110%] max-w-[46rem] -translate-x-1/2 -translate-y-1/2" />
 
-      <Reveal className="relative mx-auto flex max-w-xl flex-col items-center">
-        <img src="/jahspur-logo-light.png" alt="Jah Spur and The Strongbacks" className="h-auto w-[min(11rem,44vw)] drop-shadow-[0_6px_24px_rgba(0,0,0,0.6)]" />
-        <div className="tricolor-rule mt-8" />
-        <p className="font-accent mt-6 text-[1.45rem] italic leading-snug text-[var(--js-text)] text-legible sm:text-2xl">{HERO_LINE}</p>
+      <Reveal className="relative mx-auto flex max-w-xl flex-col items-center md:max-w-2xl">
+        {/* desktop: no logo here (the hero already showed it once); his
+            words lead. Phones keep the logo (their hero shows only the photo). */}
+        {isMobile && (
+          <img src="/jahspur-logo-light.png" alt="Jah Spur and The Strongbacks" className="mb-8 h-auto w-[min(11rem,44vw)] drop-shadow-[0_6px_24px_rgba(0,0,0,0.6)]" />
+        )}
+        {!isMobile && (
+          <p className="font-display mb-6 text-xs uppercase tracking-[0.42em] text-[var(--js-gold)] text-legible">
+            {SITE_TAGLINE} · {SITE_LOCATION}
+          </p>
+        )}
+        <div className="tricolor-rule" />
+        <h2 className={`font-accent mt-6 italic leading-snug [text-wrap:balance] text-[var(--js-text)] text-legible ${isMobile ? "text-[1.45rem]" : "text-[2.6rem]"}`}>{HERO_LINE}</h2>
         <p className="font-body mt-4 text-sm font-light leading-relaxed text-white/80 text-legible sm:text-[0.95rem]">{isMobile ? HERO_BIO_MOBILE : HERO_BIO}</p>
         <Link
           to="/about"
