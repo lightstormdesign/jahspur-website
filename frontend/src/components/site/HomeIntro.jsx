@@ -37,13 +37,13 @@ const RIDGES = [
 export const HomeIntro = () => {
   const isMobile = useIsMobile();
   return (
-    <section data-testid="home-intro" className="relative z-10 flex min-h-[100svh] items-center justify-center overflow-hidden px-6 py-24 text-center">
+    <section data-testid="home-intro" className={`relative z-10 flex min-h-[100svh] justify-center overflow-hidden px-6 text-center ${isMobile ? "items-start pb-10 pt-[max(88px,12svh)]" : "items-center py-24"}`}>
       {isMobile ? (
         // Phones: the world's landing frame (the end frame the transition
         // will land on), dimmed at the top for the words
         <>
-          <img src="/jahspur-world-mobile.jpg" alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" style={{ objectPosition: "50% 60%" }} />
-          <div aria-hidden className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(11,8,6,0.75) 0%, rgba(11,8,6,0.35) 35%, rgba(11,8,6,0.2) 60%, rgba(11,8,6,0.55) 100%)" }} />
+          <img src="/jahspur-world-mobile.jpg" alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" style={{ objectPosition: "70% 100%" }} />
+          <div aria-hidden className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(11,8,6,0.7) 0%, rgba(11,8,6,0.4) 30%, rgba(11,8,6,0.12) 58%, rgba(11,8,6,0) 75%, rgba(11,8,6,0.35) 100%)" }} />
         </>
       ) : (
         <>
@@ -68,7 +68,7 @@ export const HomeIntro = () => {
       )}
 
       {/* a soft dark pool behind the words */}
-      <div aria-hidden className="js-pool absolute left-1/2 top-1/2 h-[80%] w-[110%] max-w-[46rem] -translate-x-1/2 -translate-y-1/2" />
+      <div aria-hidden className={`js-pool absolute left-1/2 h-[80%] w-[110%] max-w-[46rem] -translate-x-1/2 -translate-y-1/2 ${isMobile ? "top-[36%]" : "top-1/2"}`} />
 
       <Reveal className="relative mx-auto flex max-w-xl flex-col items-center md:max-w-2xl">
         {/* desktop: no logo here (the hero already showed it once); his
