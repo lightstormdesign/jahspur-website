@@ -548,3 +548,58 @@ textarea.field {
   opacity: 0.92;
   filter: drop-shadow(0 2px 4px rgba(10, 4, 4, 0.6)) drop-shadow(0 0 14px rgba(250, 214, 170, 0.18));
 }
+
+/* ---- Burnell's landing pieces (WorldHome / DesktopWorld) ---- */
+.text-metallic-grad {
+  background: linear-gradient(180deg, #ffffff 0%, #d8d8d8 45%, #9a9a9a 75%, #c9c9c9 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.font-cinzel { font-family: "Cinzel", serif; }
+@keyframes emblem-sway {
+  0%, 100% { transform: rotateY(-16deg) rotateX(5deg) translateY(0); }
+  50% { transform: rotateY(16deg) rotateX(-4deg) translateY(-8px); }
+}
+@keyframes emblem-glow {
+  0%, 100% { filter: drop-shadow(0 0 6px rgba(240, 210, 140, 0.55)) drop-shadow(0 0 22px rgba(214, 179, 101, 0.35)); }
+  50% { filter: drop-shadow(0 0 10px rgba(255, 226, 160, 0.8)) drop-shadow(0 0 38px rgba(214, 179, 101, 0.55)); }
+}
+@keyframes emblem-halo {
+  0%, 100% { opacity: 0.55; transform: translate(-50%, -50%) scale(0.94); }
+  50% { opacity: 0.9; transform: translate(-50%, -50%) scale(1.06); }
+}
+.animate-emblem-sway { transform-style: preserve-3d; animation: emblem-sway 7s ease-in-out infinite; }
+.animate-emblem-glow { animation: emblem-glow 3.5s ease-in-out infinite; }
+.animate-emblem-halo { animation: emblem-halo 3.5s ease-in-out infinite; }
+@keyframes capsule-drop {
+  0% { transform: translate(-50%, 0); opacity: 0; }
+  20% { opacity: 1; }
+  70% { transform: translate(-50%, 15px); opacity: 1; }
+  100% { transform: translate(-50%, 19px); opacity: 0; }
+}
+@keyframes chevron-cascade {
+  0%, 100% { opacity: 0.15; }
+  40% { opacity: 1; }
+}
+@keyframes cue-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(5px); }
+}
+.scroll-capsule {
+  position: relative; width: 26px; height: 42px; border-radius: 999px;
+  border: 1.5px solid rgba(240, 210, 140, 0.85);
+  background: rgba(0, 0, 0, 0.28);
+  box-shadow: 0 0 10px rgba(214, 179, 101, 0.55);
+}
+.scroll-capsule-drop {
+  position: absolute; left: 50%; top: 8px; width: 5px; height: 9px; border-radius: 999px;
+  background: #f5dfa8; box-shadow: 0 0 8px rgba(245, 223, 168, 0.95);
+  animation: capsule-drop 1.9s cubic-bezier(0.55, 0, 0.45, 1) infinite;
+}
+.animate-cue-bob { animation: cue-bob 2.6s ease-in-out infinite; }
+.chevron-cascade { animation: chevron-cascade 1.9s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .animate-emblem-sway, .animate-emblem-glow, .animate-emblem-halo,
+  .scroll-capsule-drop, .animate-cue-bob, .chevron-cascade { animation: none; }
+}
