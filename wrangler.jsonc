@@ -3,8 +3,10 @@
   "compatibility_date": "2026-08-01",
   // Runs before every `wrangler deploy` (including Cloudflare's own build
   // pipeline), so frontend/build always exists when assets are uploaded.
+  // Yarn is pinned to 1.x: Cloudflare's image ships Yarn 4, which rejects
+  // this project's Yarn 1 lockfile.
   "build": {
-    "command": "cd frontend && yarn install --frozen-lockfile && yarn build"
+    "command": "cd frontend && npx --yes yarn@1.22.22 install --frozen-lockfile --non-interactive && npx --yes yarn@1.22.22 build"
   },
   "assets": {
     "directory": "./frontend/build",
