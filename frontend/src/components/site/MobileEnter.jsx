@@ -1,28 +1,62 @@
 import { useEffect, useRef } from "react";
 import { ChevronDown } from "lucide-react";
-import { HERO_IMAGE_MOBILE, HERO_CUTOUT_MOBILE, HERO_PLATE_MOBILE } from "@/data/site";
+import {
+  HERO_IMAGE_MOBILE,
+  HERO_CUTOUT_MOBILE,
+  HERO_PLATE_MOBILE,
+  HERO_IMAGE_DESKTOP,
+  HERO_CUTOUT_DESKTOP,
+  HERO_PLATE_DESKTOP,
+} from "@/data/site";
 import { tilt } from "@/utils/motion";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
-// Phone home: scroll to enter (Trev's flow, without the tap to enter).
+// Home: scroll to enter (Trev's flow, without the tap to enter), on phones
+// and desktop, each with its own Canva frames (phone 1080x1920, desktop
+// 1920x1080).
 //
-// Two layers made in Canva on the same 1080x1920 canvas: the plate (trees
-// and sky, Jah and the mic removed) and the cutout (Jah with the mic). All
-// motion is applied imperatively in one rAF loop (no React re-renders):
+// Layers: the plate (trees and sky, Jah and the mic removed) and the cutout
+// (Jah with the mic). Without a cutout the full photo is one layer. All
+// motion runs imperatively in one rAF loop (no React re-renders):
 //
-//  - Always on, no scrolling needed: a slow 3D drift like Trev's hero. He
-//    comes toward you on a diagonal to one side and back, pauses, then the
-//    mirror to the other side (24s cycle); the trees drift the other way and
-//    by less, so the two planes separate.
-//  - Phone tilt (once motion access is allowed at the speaker or the menu)
-//    leads the drift: tilt and he leans that way, nearer the further you go.
-//  - Scroll: he pushes in faster than the trees (parallax), the scene darkens,
-//    and the page carries on down into his story (About), with no tap.
+//  - Always on: a slow 3D drift like Trev's hero. He comes toward you on a
+//    diagonal to one side and back, pauses, then the mirror to the other side
+//    (24s cycle); the trees drift the other way and by less.
+//  - Leading it: phone tilt (once motion access is allowed at the speaker or
+//    the menu), or the mouse on desktop.
+//  - Scroll: he pushes in faster than the trees (parallax), the scene
+//    darkens, and the page carries on down into his story (About).
 const MOVE_S = 8;
 const PAUSE_S = 4;
 const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
 const smooth = (t) => t * t * (3 - 2 * t);
 
+const SETS = {
+  mobile: {
+    full: HERO_IMAGE_MOBILE,
+    cutout: HERO_CUTOUT_MOBILE,
+    plate: HERO_PLATE_MOBILE,
+    pos: "50% 62%",
+    meOrigin: "45% 70%",
+    plateOrigin: "50% 55%",
+    drift: 16,
+  },
+  desktop: {
+    full: HERO_IMAGE_DESKTOP,
+    cutout: HERO_CUTOUT_DESKTOP,
+    plate: HERO_PLATE_DESKTOP,
+    pos: "0% 35%",
+    meOrigin: "8% 40%",
+    plateOrigin: "40% 45%",
+    drift: 26,
+  },
+};
+
 export const MobileEnter = () => {
+  const isMobile = useIsMobile();
+  const set = isMobile ? SETS.mobile : SETS.desktop;
+  const layered = Boolean(set.cutout && set.plate);
+
   const sectionRef = useRef(null);
   const plateRef = useRef(null);
   const meRef = useRef(null);
@@ -36,6 +70,14 @@ export const MobileEnter = () => {
     let last = 0;
     let px = 0, py = 0, vx = 0, vy = 0; // the drift, spring-smoothed
     let sp = 0; // eased scroll progress
+    let mx = 0, my = 0, mouse = false; // the mouse, -1..1 from centre
+    const onMove = (e) => {
+      if (e.pointerType !== "mouse") return;
+      mouse = true;
+      mx = (e.clientX / window.innerWidth) * 2 - 1;
+      my = (e.clientY / window.innerHeight) * 2 - 1;
+    };
+    window.addEventListener("pointermove", onMove, { passive: true });
 
     const frame = (now) => {
       if (t0 === null) { t0 = now; last = now; }
@@ -43,7 +85,6 @@ export const MobileEnter = () => {
       last = now;
       const t = (now - t0) / 1000;
 
-      // scroll progress through the pinned section
       const s = sectionRef.current;
       let p = 0;
       if (s) {
@@ -58,10 +99,12 @@ export const MobileEnter = () => {
       const u = (ph % half) / MOVE_S;
       const autoNear = ph % half < MOVE_S ? (1 - Math.cos(2 * Math.PI * u)) / 2 : 0;
       const autoSide = (ph < half ? -1 : 1) * autoNear;
-      const led = tilt.live;
-      const w = led ? 0.45 : 1; // with tilt, the drift carries on beneath, smaller
-      const aSide = clamp(autoSide * w + (led ? tilt.x : 0), -1, 1);
-      const aNear = clamp(autoNear * w + (led ? Math.abs(tilt.x) * 0.8 + Math.max(0, -tilt.y) * 0.4 : 0));
+      const ix = tilt.live ? tilt.x : mouse ? mx : 0;
+      const iy = tilt.live ? tilt.y : mouse ? my : 0;
+      const led = tilt.live || mouse;
+      const w = led ? 0.45 : 1; // led: the drift carries on beneath, smaller
+      const aSide = clamp(autoSide * w + (led ? ix : 0), -1, 1);
+      const aNear = clamp(autoNear * w + (led ? Math.abs(ix) * 0.8 + Math.max(0, -iy) * 0.4 : 0));
       vx += ((aSide - px) * 22 - vx * 8) * dt;
       vy += ((aNear - py) * 22 - vy * 8) * dt;
       px += vx * dt;
@@ -69,18 +112,19 @@ export const MobileEnter = () => {
 
       const m = reduce ? 0 : 1;
       const e = smooth(sp);
-      // him: drifts most, pushes in most
-      const meScale = 1.06 + 0.05 * py * m + 0.24 * e * m;
-      const meX = px * 16 * m;
-      const meY = (1 - py) * 8 * m - 30 * e * m;
-      // the trees: the other way, and by less
-      const bgScale = 1.08 + 0.015 * py * m + 0.08 * e * m;
-      const bgX = -px * 7 * m;
-      const bgY = -py * 3 * m;
-      if (meRef.current) meRef.current.style.transform = `translate3d(${meX.toFixed(1)}px, ${meY.toFixed(1)}px, 0) scale(${meScale.toFixed(4)})`;
-      if (plateRef.current) {
-        plateRef.current.style.transform = `translate3d(${bgX.toFixed(1)}px, ${bgY.toFixed(1)}px, 0) scale(${bgScale.toFixed(4)})`;
-        plateRef.current.style.filter = `blur(${(0.6 + 1.8 * e).toFixed(2)}px)`;
+      const D = set.drift;
+      if (layered) {
+        // him: drifts most, pushes in most; the trees the other way, by less
+        const meScale = 1.06 + 0.05 * py * m + 0.24 * e * m;
+        if (meRef.current)
+          meRef.current.style.transform = `translate3d(${(px * D * m).toFixed(1)}px, ${((1 - py) * 8 * m - 30 * e * m).toFixed(1)}px, 0) scale(${meScale.toFixed(4)})`;
+        if (plateRef.current) {
+          plateRef.current.style.transform = `translate3d(${(-px * D * 0.45 * m).toFixed(1)}px, ${(-py * 3 * m).toFixed(1)}px, 0) scale(${(1.08 + 0.015 * py * m + 0.08 * e * m).toFixed(4)})`;
+          plateRef.current.style.filter = `blur(${(0.6 + 1.8 * e).toFixed(2)}px)`;
+        }
+      } else if (plateRef.current) {
+        // one layer: a gentler version of his movement
+        plateRef.current.style.transform = `translate3d(${(px * D * 0.6 * m).toFixed(1)}px, ${((1 - py) * 5 * m - 20 * e * m).toFixed(1)}px, 0) scale(${(1.06 + 0.035 * py * m + 0.16 * e * m).toFixed(4)})`;
       }
       if (shadeRef.current) shadeRef.current.style.opacity = (0.15 + 0.85 * smooth(clamp((sp - 0.45) / 0.55))).toFixed(3);
       if (cueRef.current) cueRef.current.style.opacity = (1 - clamp(sp / 0.12)).toFixed(3);
@@ -88,33 +132,34 @@ export const MobileEnter = () => {
       raf = requestAnimationFrame(frame);
     };
     raf = requestAnimationFrame(frame);
-    return () => cancelAnimationFrame(raf);
-  }, []);
-
-  const plate = HERO_PLATE_MOBILE || HERO_IMAGE_MOBILE;
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("pointermove", onMove);
+    };
+  }, [layered, set]);
 
   return (
-    <section ref={sectionRef} data-testid="mobile-enter" data-nav-clear className="relative" style={{ height: "190svh" }}>
+    <section ref={sectionRef} data-testid="mobile-enter" data-nav-clear className="relative" style={{ height: isMobile ? "190svh" : "200vh" }}>
       <div className="sticky top-0 h-[100svh] w-full overflow-hidden bg-[var(--js-black)]">
         <img
           ref={plateRef}
-          src={plate}
-          alt=""
-          aria-hidden
+          src={layered ? set.plate : set.full}
+          alt={layered ? "" : "Jah Spur singing and playing guitar"}
+          aria-hidden={layered || undefined}
           className="absolute inset-0 h-full w-full object-cover will-change-transform"
-          style={{ objectPosition: "50% 62%", transformOrigin: "50% 55%" }}
+          style={{ objectPosition: set.pos, transformOrigin: layered ? set.plateOrigin : set.meOrigin }}
         />
-        {HERO_CUTOUT_MOBILE && (
+        {layered && (
           <img
             ref={meRef}
-            src={HERO_CUTOUT_MOBILE}
+            src={set.cutout}
             alt="Jah Spur singing and playing guitar"
             className="absolute inset-0 h-full w-full object-cover will-change-transform"
-            style={{ objectPosition: "50% 62%", transformOrigin: "45% 70%" }}
+            style={{ objectPosition: set.pos, transformOrigin: set.meOrigin }}
           />
         )}
 
-        {/* warm grade, a little mist, legibility at top and bottom */}
+        {/* warm grade, a little mist */}
         <div aria-hidden className="pointer-events-none absolute inset-0 mix-blend-soft-light" style={{ background: "rgba(226,140,60,0.18)" }} />
         <div aria-hidden className="mist-a pointer-events-none absolute top-[30%] h-[40%]" style={{ opacity: 0.35 }} />
         {/* Trev's vignette: a dark fall-off from the top over the canopy, and

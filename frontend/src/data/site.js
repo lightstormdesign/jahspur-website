@@ -94,6 +94,14 @@ export const HERO_CUTOUT_MOBILE = "/jahspur-hero-mobile-cutout.webp";
 // yet; "Prophecy" is the natural pick. Drop an .m4a/.mp3 in public/ and set
 // this path; until then the speaker only asks for motion access.
 export const SONG_SRC = null;
+
+// Desktop frames from Canva (1920x1080): the full extended photo and the
+// background plate. PENDING: the desktop cutout (Jah + mic, transparent PNG
+// on the same canvas). Until it's set, desktop runs the same drift and scroll
+// on the full photo as one layer; set the cutout and it becomes two layers.
+export const HERO_IMAGE_DESKTOP = "/jahspur-hero-desktop.jpg";
+export const HERO_PLATE_DESKTOP = "/jahspur-hero-desktop-plate.jpg";
+export const HERO_CUTOUT_DESKTOP = null;
 export const HERO_PLATE_MOBILE = "/jahspur-hero-mobile-plate.jpg";
 
 // Small announcement bubble on the Hero (one-line edit when there's news).
