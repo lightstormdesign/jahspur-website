@@ -462,3 +462,50 @@ textarea.field {
   outline: 1px solid var(--js-gold-light);
   outline-offset: 2px;
 }
+
+/* Scroll to Enter (MobileEnter.jsx): Trev's "Tap to Enter" treatment */
+.js-enter {
+  display: grid;
+  place-items: center;
+  isolation: isolate;
+  padding: 14px 10px;
+}
+.js-enter > span {
+  grid-area: 1 / 1;
+  font-family: "Marcellus", serif;
+  font-weight: 400;
+  font-size: 19px;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+  letter-spacing: 0.32em;
+  margin-right: -0.32em;
+}
+.js-enter .word {
+  color: #fbf3e3;
+  -webkit-text-stroke: 0.35px #fbf3e3;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.75), 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+.js-enter .halo {
+  width: 190%;
+  height: 640%;
+  border-radius: 50%;
+  z-index: -2;
+  letter-spacing: 0;
+  margin: 0;
+  background: radial-gradient(closest-side, rgba(12, 8, 5, 0.66), rgba(12, 8, 5, 0.34) 52%, rgba(12, 8, 5, 0));
+}
+.js-enter .glow {
+  color: #f1c472;
+  filter: blur(10px);
+  opacity: 0.4;
+  z-index: -1;
+  animation: js-breathe 5s ease-in-out infinite alternate;
+}
+@keyframes js-breathe {
+  from { opacity: 0.3; }
+  to { opacity: 0.6; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .js-enter .glow { animation: none; }
+}

@@ -117,17 +117,24 @@ export const MobileEnter = () => {
         {/* warm grade, a little mist, legibility at top and bottom */}
         <div aria-hidden className="pointer-events-none absolute inset-0 mix-blend-soft-light" style={{ background: "rgba(226,140,60,0.18)" }} />
         <div aria-hidden className="mist-a pointer-events-none absolute top-[30%] h-[40%]" style={{ opacity: 0.35 }} />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0"
-          style={{ background: "linear-gradient(180deg, rgba(11,8,6,0.55) 0%, rgba(11,8,6,0) 18%, rgba(11,8,6,0) 72%, rgba(11,8,6,0.75) 100%)" }}
-        />
+        {/* Trev's vignette: a dark fall-off from the top over the canopy, and
+            darkened sides/corners; plus a soft floor so the cue reads */}
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[46svh]" style={{ background: "linear-gradient(to bottom, rgba(10,6,4,0.55) 0%, rgba(10,6,4,0.3) 42%, transparent 100%)" }} />
+        <div aria-hidden className="pointer-events-none absolute inset-0" style={{ background: "radial-gradient(ellipse 85% 75% at 50% 48%, transparent 50%, rgba(10,6,4,0.55) 100%)" }} />
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-[34svh]" style={{ background: "linear-gradient(to top, rgba(10,6,4,0.6) 0%, rgba(10,6,4,0.25) 50%, transparent 100%)" }} />
         {/* darkens as you scroll on, so the story below arrives out of the dark */}
         <div ref={shadeRef} aria-hidden className="pointer-events-none absolute inset-0 bg-[var(--js-black)]" style={{ opacity: 0.15 }} />
 
-        <div ref={cueRef} className="absolute inset-x-0 bottom-[max(28px,env(safe-area-inset-bottom))] flex flex-col items-center gap-2">
-          <span className="font-display text-[0.66rem] uppercase tracking-[0.45em] text-[var(--js-text)] [text-shadow:0_1px_12px_rgba(0,0,0,0.7)]">Scroll to enter</span>
-          <ChevronDown size={18} className="text-[var(--js-gold)]" style={{ animation: "scroll-cue 2.2s ease-out infinite" }} />
+        {/* Scroll to enter, Trev's "Tap to Enter" type and placement: centred,
+            13% up from the bottom, with a dark halo behind and a breathing
+            gold glow so it reads over the photo */}
+        <div ref={cueRef} className="pointer-events-none absolute inset-x-0 flex flex-col items-center" style={{ bottom: "max(56px, 13svh)", transform: "translateY(50%)" }}>
+          <div className="js-enter">
+            <span className="halo" aria-hidden />
+            <span className="glow" aria-hidden>Scroll to Enter</span>
+            <span className="word">Scroll to Enter</span>
+          </div>
+          <ChevronDown size={20} className="mt-3 text-[var(--js-gold-light)] [filter:drop-shadow(0_1px_6px_rgba(0,0,0,0.7))]" style={{ animation: "scroll-cue 2.2s ease-out infinite" }} />
         </div>
       </div>
     </section>
