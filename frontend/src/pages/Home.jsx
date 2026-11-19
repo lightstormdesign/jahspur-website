@@ -1,10 +1,11 @@
 import { Navbar } from "@/components/site/Navbar";
 import { Footer } from "@/components/site/Footer";
 import { MobileEnter } from "@/components/site/MobileEnter";
-import About from "@/pages/About";
+import { HomeIntro } from "@/components/site/HomeIntro";
 
 // Home, phones and desktop: scroll to enter (MobileEnter.jsx: his real
-// photo, 3D drift, parallax), then straight down into his story (About).
+// photo, 3D drift, parallax), then a short intro (his logo, a small bio,
+// Read My Story -> /about), then the footer.
 //
 // Kept but not used: EnterHero.jsx (the earlier push-in with his name over
 // the photo), Hero.jsx (static hero) and DawnExperience.jsx (the
@@ -16,7 +17,7 @@ export default function Home() {
       <div className="relative z-10">
         <MobileEnter />
       </div>
-      <About embedded />
+      <HomeIntro />
       <div className="relative z-10">
         <Footer />
       </div>

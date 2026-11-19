@@ -191,15 +191,16 @@ export const MobileEnter = () => {
             </div>
           </div>
         ) : (
-          // Desktop: his logo, big, on the right, with Scroll to Enter under
-          // it as the subtitle (him on the left, the sign on the right)
+          // Desktop: his logo on the right, kept calm (smaller, a still
+          // shadow, no breathing glow) so it doesn't compete with him, with
+          // Scroll to Enter under it as the subtitle
           <div ref={cueRef} className="pointer-events-none absolute inset-y-0 right-0 flex w-[38%] flex-col items-center justify-center">
             <div className="relative flex flex-col items-center">
-              <div aria-hidden className="js-pool absolute left-1/2 top-1/2 h-[125%] w-[150%] -translate-x-1/2 -translate-y-1/2" />
-              <img src="/jahspur-logo-light.png" alt="Jah Spur and The Strongbacks" className="js-logo-glow relative h-auto w-[min(22rem,25vw,42vh)]" />
-              <span className="relative mt-[clamp(1.4rem,4vh,2.4rem)] flex items-center gap-5" style={{ animation: "breathe 3.2s ease-in-out infinite" }}>
+              <div aria-hidden className="js-pool absolute left-1/2 top-1/2 h-[120%] w-[140%] -translate-x-1/2 -translate-y-1/2" />
+              <img src="/jahspur-logo-light.png" alt="Jah Spur and The Strongbacks" className="js-logo-calm relative h-auto w-[min(15rem,17vw,30vh)]" />
+              <span className="relative mt-[clamp(1.1rem,3vh,1.8rem)] flex items-center gap-4" style={{ animation: "breathe 3.2s ease-in-out infinite" }}>
                 <span aria-hidden className="h-px w-10 bg-gradient-to-r from-transparent to-white/90" />
-                <span className="js-cue text-[clamp(1.2rem,1.6vw,1.9rem)]">Scroll to Enter</span>
+                <span className="js-cue text-[clamp(1rem,1.25vw,1.4rem)]">Scroll to Enter</span>
                 <span aria-hidden className="h-px w-10 bg-gradient-to-l from-transparent to-white/90" />
               </span>
             </div>
