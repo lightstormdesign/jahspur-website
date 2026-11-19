@@ -187,6 +187,9 @@ const STAGES = [
 
 const N = STAGES.length;
 
+// shared with the home page, where the story is told over the world
+export { STAGES as ABOUT_STAGES };
+
 function stageOpacity(p, i) {
   const center = (i + 0.5) / N;
   const plateau = 0.3 / N;

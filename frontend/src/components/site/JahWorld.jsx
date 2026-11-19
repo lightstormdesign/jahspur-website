@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { ChevronDown } from "lucide-react";
-import { WORLD, LASTING_MESSAGE, HERO_BIO, HERO_BIO_MOBILE, SITE_TAGLINE, SITE_LOCATION } from "@/data/site";
+import { WORLD, LASTING_MESSAGE, HERO_BIO, HERO_BIO_MOBILE, SITE_TAGLINE, SITE_LOCATION, CALL_TO_ACTION } from "@/data/site";
+import { ABOUT_STAGES } from "@/pages/About";
+import { Reveal } from "./Reveal";
 import { tilt } from "@/utils/motion";
 
 // Jah Spur's home: portal -> transition -> world. Burnell's pattern
@@ -16,10 +18,12 @@ import { tilt } from "@/utils/motion";
 //               second has the portal's dim + blur baked in, fading out, so
 //               nothing snaps. It ends on the world's first frame.
 //   world       the layered world (living sky video + 4 PNG layers), starting
-//               exactly where the clip ended. Scroll drives the descent: the
-//               sky stays, the mountains, valley and canopy rise past at their
-//               own depths, the near leaves part. Jah's words arrive at the
-//               bottom, over the trees, with Read My Story.
+//               exactly where the clip ended. On landing: his logo / words and
+//               short bio, softly dimmed, with a scroll cue. Scroll lifts that
+//               and drives the descent: the sky stays, the mountains, valley
+//               and canopy rise past at their own depths, the near leaves rise
+//               then part around you. Then his story (the About chapters) plays
+//               over the trees, which hold still and dim behind it.
 //
 // Kept exactly from Burnell (each fixed a real iPhone failure): portal loads
 // alone first; the transition downloads whole into memory (blob) shortly
@@ -31,12 +35,13 @@ import { tilt } from "@/utils/motion";
 // / animated filters over moving layers; parallax eased in after the swap.
 
 const OVERSCAN = 1.05; // room for drift/tilt without showing an edge
-const DESCENT_SVH = 220; // scroll distance of the descent
+const DESCENT_SVH = 200; // scroll distance of the descent
 const SCROLL_EASE = 6; // how quickly the world catches up to the finger (per s)
 const TILT_X = 28; // canvas px of sideways parallax at full tilt, nearest layer
 const TILT_Y = 18;
 const PAR_RAMP_S = 1.5; // parallax eases in after the swap (no sideways jump)
-const STORY_DIM = 0.5; // how dark the trees get behind Jah's words
+const STORY_DIM = 0.55; // how dark the trees get behind the story
+const LANDING_DIM = 0.38; // dim under the landing copy, lifting as you scroll
 const TRANSITION_FAILSAFE_MS = 9000;
 const WARM_DELAY_MS = 800;
 const WARM_FALLBACK_MS = 3500;
@@ -65,6 +70,72 @@ const afterFirstFrame = (v, cb) => {
   if (v.requestVideoFrameCallback) v.requestVideoFrameCallback(go);
 };
 
+const FEATHER = "radial-gradient(ellipse 72% 76% at 50% 50%, #000 42%, rgba(0,0,0,0.4) 72%, transparent 100%)";
+
+// The About chapters, one screen each, settling gently (proximity snap).
+const Story = ({ isMobile }) => (
+  <div className="relative z-20" data-testid="world-story" style={{ overflowX: "clip" }}>
+    {ABOUT_STAGES.map((st) => {
+      if (st.cta)
+        return (
+          <section key={st.id} className="flex min-h-[100svh] snap-start items-center justify-center px-6 text-center">
+            <Reveal className="relative flex max-w-xl flex-col items-center">
+              <div aria-hidden className="js-pool absolute left-1/2 top-1/2 h-[140%] w-[130%] -translate-x-1/2 -translate-y-1/2" />
+              <img src="/jahspur-logo-light.png" alt="" aria-hidden className="relative h-24 w-auto" />
+              <p className="font-accent relative mt-7 text-[1.7rem] italic leading-snug text-[var(--js-text)] text-legible sm:text-4xl">
+                {CALL_TO_ACTION.lead} <span className="text-gold-grad">{CALL_TO_ACTION.follow}</span>
+              </p>
+              <div className="relative mt-8 flex flex-wrap items-center justify-center gap-3">
+                <Link to="/community" className="animate-glow-pulse rounded-full bg-[var(--js-gold)] px-8 py-3.5 font-body text-sm font-medium text-[var(--js-black)] transition-colors hover:bg-[var(--js-gold-light)]">
+                  Join the Family
+                </Link>
+                <Link to="/album" className="rounded-full border border-white/35 bg-black/25 px-8 py-3.5 font-body text-sm text-white/90 transition-colors hover:border-[var(--js-gold)] hover:text-[var(--js-gold-light)]">
+                  Written in Stone
+                </Link>
+              </div>
+              <p className="font-display relative mt-10 text-sm text-white/80 text-legible">— Jah Spur</p>
+            </Reveal>
+          </section>
+        );
+      if (st.bridge)
+        return (
+          <section key={st.id} className="flex min-h-[100svh] snap-start items-center justify-center px-8 text-center">
+            <Reveal>
+              <p className="font-accent max-w-lg text-2xl italic leading-snug text-white/90 text-legible sm:text-4xl">{st.body}</p>
+            </Reveal>
+          </section>
+        );
+      return (
+        <section key={st.id} className="flex min-h-[100svh] snap-start items-center px-6 py-20 lg:px-8">
+          <div className="mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-6 lg:grid-cols-5 lg:gap-14">
+            <Reveal className="relative lg:col-span-3 lg:order-2">
+              <img
+                src={st.media}
+                alt={st.alt || ""}
+                loading="lazy"
+                className={`mx-auto w-auto object-contain ${isMobile ? "max-h-[38svh]" : "max-h-[70svh]"}`}
+                style={{ WebkitMaskImage: FEATHER, maskImage: FEATHER }}
+              />
+            </Reveal>
+            <Reveal delay={0.1} className="relative lg:col-span-2 lg:order-1">
+              <div aria-hidden className="js-pool absolute -inset-x-8 -inset-y-10 -z-10" />
+              {st.kicker && <span className="overline block">{st.kicker}</span>}
+              {st.title && <h2 className="font-display mt-2 text-2xl text-[var(--js-text)] text-legible sm:text-3xl">{st.title}</h2>}
+              <div className="mt-4 space-y-4">
+                {st.body.map((para, j) => (
+                  <p key={j} className="font-accent text-lg leading-relaxed text-white/90 text-legible sm:text-xl">
+                    {para}
+                  </p>
+                ))}
+              </div>
+            </Reveal>
+          </div>
+        </section>
+      );
+    })}
+  </div>
+);
+
 export const JahWorld = ({ isMobile }) => {
   const S = isMobile ? WORLD.phone : WORLD.desktop;
   const [phase, setPhase] = useState("portal"); // portal | transition | world
@@ -86,8 +157,7 @@ export const JahWorld = ({ isMobile }) => {
   const rectRefs = useRef({}); // portal loop / ben / transition / sky video wrappers
   const spacerRef = useRef(null);
   const shadeRef = useRef(null);
-  const introRef = useRef(null);
-  const cueRef = useRef(null);
+  const landingRef = useRef(null);
   const enteringRef = useRef(false);
   const phaseRef = useRef("portal");
   const worldAtRef = useRef(0);
@@ -170,6 +240,7 @@ export const JahWorld = ({ isMobile }) => {
       window.scrollTo(0, 0);
       root.style.overflow = "";
       root.style.overscrollBehaviorY = "none";
+      root.style.scrollSnapType = "y proximity";
       document.body.style.overscrollBehaviorY = "none";
       loopRef.current?.pause();
     } else {
@@ -178,6 +249,7 @@ export const JahWorld = ({ isMobile }) => {
     return () => {
       root.style.overflow = "";
       root.style.overscrollBehaviorY = "";
+      root.style.scrollSnapType = "";
       document.body.style.overscrollBehaviorY = "";
     };
   }, [phase]);
@@ -425,6 +497,12 @@ export const JahWorld = ({ isMobile }) => {
         placeRect(rectRefs.current.ben, S.portal.rect, k, ox, oy);
         placeRect(rectRefs.current.transition, S.transition.rect, k, ox, oy);
         layerRefs.current.forEach((el) => el && (el.style.width = `${(CW * k).toFixed(1)}px`));
+        const sk = rectRefs.current.sky;
+        if (sk) {
+          sk.style.width = `${(S.sky.rect[2] * k).toFixed(1)}px`;
+          sk.style.height = `${(S.sky.rect[3] * k).toFixed(1)}px`;
+        }
+        lastKey = "";
       }
 
       const reduceM = reduce ? 0 : 1;
@@ -467,7 +545,18 @@ export const JahWorld = ({ isMobile }) => {
       ty += (iy - ty) * 0.1;
       const ramp = ph === "world" ? smooth(clamp01((now - worldAtRef.current) / 1000 / PAR_RAMP_S)) : 0;
       const par = ramp * (1 - smooth(clamp01((p - 0.85) / 0.15))) * reduceM; // landed = still
-      const key = `${size}|${ys.toFixed(1)}|${(tx * par).toFixed(3)}|${(ty * par).toFixed(3)}`;
+      const key = `${size}|${p.toFixed(4)}|${(tx * par).toFixed(3)}|${(ty * par).toFixed(3)}`;
+      // landing copy: there on arrival, gone on the first bit of scroll
+      if (landingRef.current) {
+        const lo = ph === "world" ? 1 - clamp01(target / (H * 0.14)) : 0;
+        const ls = lo.toFixed(3);
+        if (landingRef.current.dataset.o !== ls) {
+          landingRef.current.dataset.o = ls;
+          landingRef.current.style.opacity = ls;
+          landingRef.current.style.visibility = lo > 0.01 ? "visible" : "hidden";
+          landingRef.current.style.pointerEvents = lo > 0.6 ? "auto" : "none";
+        }
+      }
       if (key !== lastKey) {
         lastKey = key;
         S.layers.forEach((L, i) => {
@@ -477,40 +566,32 @@ export const JahWorld = ({ isMobile }) => {
           let ax;
           let ay;
           let dy = 0;
+          const part = smooth(clamp01((p - 0.4) / 0.6)); // the near leaves part in the second half
           if (isMobile) {
             // phones: grow from the bottom edge (it never rises into view), nearer faster
-            g = L.part ? 1 + 0.7 * e : 1 + L.depth * 0.56 * e;
+            g = L.part ? 1 + 0.12 * e + 0.7 * part : 1 + L.depth * 0.5 * e;
             ax = CW / 2;
-            ay = L.part ? CH * 0.63 : CH;
+            ay = L.part ? CH * 0.6 : CH;
           } else {
             // desktop: the tall canvas slides up past, nearer faster, and grows a little
             dy = -L.depth * 520 * e;
-            g = L.part ? 1 + 0.6 * e : 1 + L.depth * 0.12 * e;
+            g = L.part ? 1 + 0.12 * e + 0.55 * part : 1 + L.depth * 0.12 * e;
             ax = CW / 2;
-            ay = L.part ? 800 : CH;
-            if (L.part) dy = -200 * e;
+            ay = L.part ? 1000 : CH;
+            if (L.part) dy = -580 * e;
           }
-          const gx = ax * (1 - g) + tx * par * (L.depth - 0.3) * TILT_X;
-          const gy = ay * (1 - g) + dy + ty * par * Math.max(0, L.depth - 0.1) * TILT_Y;
+          const gx = ax * (1 - g) + tx * par * L.depth * TILT_X;
+          const gy = ay * (1 - g) + dy + ty * par * L.depth * TILT_Y;
           el.style.transform = `translate3d(${(ox + gx * k).toFixed(1)}px, ${(oy + gy * k).toFixed(1)}px, 0) scale(${g.toFixed(4)})`;
           // the living sky rides with the sky layer
           if (L.key === "sky" && rectRefs.current.sky) {
             const sk = rectRefs.current.sky;
             const r = S.sky.rect;
-            sk.style.width = `${(r[2] * k).toFixed(1)}px`;
-            sk.style.height = `${(r[3] * k).toFixed(1)}px`;
             sk.style.transform = `translate3d(${(ox + (gx + r[0]) * k).toFixed(1)}px, ${(oy + (gy + r[1]) * k).toFixed(1)}px, 0)`;
           }
         });
-        if (shadeRef.current) shadeRef.current.style.opacity = (STORY_DIM * smooth(clamp01((p - 0.55) / 0.4))).toFixed(3);
-        if (introRef.current) {
-          const o = smooth(clamp01((p - 0.7) / 0.25));
-          introRef.current.style.opacity = o.toFixed(3);
-          introRef.current.style.transform = `translate3d(0, ${((1 - o) * 26).toFixed(1)}px, 0)`;
-          introRef.current.style.visibility = o > 0.01 ? "visible" : "hidden";
-          introRef.current.style.pointerEvents = o > 0.6 ? "auto" : "none";
-        }
-        if (cueRef.current) cueRef.current.style.opacity = (1 - clamp01(p / 0.08)).toFixed(3);
+        const veil = ph === "world" ? 1 - smooth(clamp01(p / 0.12)) : 0;
+        if (shadeRef.current) shadeRef.current.style.opacity = Math.max(LANDING_DIM * veil, STORY_DIM * smooth(clamp01((p - 0.6) / 0.4))).toFixed(3);
       }
       raf = requestAnimationFrame(frame);
     };
@@ -530,7 +611,8 @@ export const JahWorld = ({ isMobile }) => {
     <div data-testid="jah-world" data-nav-clear className="relative">
       {/* the descent's scroll length (the page can only scroll in the world) */}
       <div ref={spacerRef} style={{ height: `${DESCENT_SVH}svh` }} />
-      <div style={{ height: "100svh" }} />
+      {/* his story, over the trees (they hold still and dim behind it) */}
+      {inWorld && <Story isMobile={isMobile} />}
 
       <div ref={stageRef} className="fixed inset-x-0 top-0 z-10 overflow-hidden bg-[var(--js-black)]" style={{ height: "100lvh" }}>
         {/* ---------- world (underneath; hidden until it's needed) ---------- */}
@@ -673,40 +755,32 @@ export const JahWorld = ({ isMobile }) => {
           )}
         </div>
 
-        {/* ---------- in the world: scroll cue, then Jah's words over the trees ---------- */}
+        {/* ---------- landing: his words and short bio, right on arrival ---------- */}
         <div
-          ref={cueRef}
-          aria-hidden
-          className="pointer-events-none absolute inset-x-0 bottom-[max(26px,env(safe-area-inset-bottom))] flex flex-col items-center gap-1"
-          style={{ visibility: inWorld && holdGone ? "visible" : "hidden" }}
+          ref={landingRef}
+          data-testid="world-landing"
+          className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center"
+          style={{ opacity: 0, visibility: "hidden" }}
         >
-          <span className="font-display text-[0.62rem] uppercase tracking-[0.45em] text-white/85 [text-shadow:0_1px_10px_rgba(0,0,0,0.8)]">Scroll</span>
-          <ChevronDown size={18} className="text-[var(--js-gold-light)]" style={{ animation: "scroll-cue 2.2s ease-out infinite" }} />
-        </div>
-
-        <div ref={introRef} className="absolute inset-0 flex items-center justify-center px-6 text-center" style={{ opacity: 0, visibility: "hidden" }}>
           <div className="relative mx-auto flex max-w-xl flex-col items-center md:max-w-2xl">
             <div aria-hidden className="js-pool absolute left-1/2 top-1/2 h-[130%] w-[120%] -translate-x-1/2 -translate-y-1/2" />
             {isMobile ? (
-              <img src="/jahspur-logo-light.png" alt="Jah Spur and The Strongbacks" className="relative mb-7 h-auto w-[min(10rem,42vw)]" />
+              <img src="/jahspur-logo-light.png" alt="Jah Spur and The Strongbacks" className="relative mb-6 h-auto w-[min(9rem,38vw)]" />
             ) : (
               <p className="font-display relative mb-6 text-xs uppercase tracking-[0.42em] text-[var(--js-gold)] text-legible">
                 {SITE_TAGLINE} · {SITE_LOCATION}
               </p>
             )}
             <div className="tricolor-rule relative" />
-            <h2 className={`font-accent relative mt-6 italic leading-snug [text-wrap:balance] text-[var(--js-text)] text-legible ${isMobile ? "text-[1.45rem]" : "text-[2.6rem]"}`}>
+            <h2 className={`font-accent relative mt-5 italic leading-snug [text-wrap:balance] text-[var(--js-text)] text-legible ${isMobile ? "text-[1.4rem]" : "text-[2.5rem]"}`}>
               {LASTING_MESSAGE[0]}
             </h2>
             <p className={`font-display relative mt-3 uppercase tracking-[0.3em] text-gold-grad ${isMobile ? "text-sm" : "text-lg"}`}>{LASTING_MESSAGE[1]}</p>
             <p className="font-body relative mt-4 text-sm font-light leading-relaxed text-white/85 text-legible sm:text-[0.95rem]">{isMobile ? HERO_BIO_MOBILE : HERO_BIO}</p>
-            <Link
-              to="/about"
-              data-testid="home-read-story"
-              className="animate-glow-pulse relative mt-8 inline-flex rounded-full bg-[var(--js-gold)] px-8 py-3.5 font-body text-sm font-medium text-[var(--js-black)] transition-colors hover:bg-[var(--js-gold-light)]"
-            >
-              Read My Story
-            </Link>
+          </div>
+          <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-[max(26px,env(safe-area-inset-bottom))] flex flex-col items-center gap-1">
+            <span className="font-display text-[0.62rem] uppercase tracking-[0.45em] text-white/85 [text-shadow:0_1px_10px_rgba(0,0,0,0.8)]">Scroll for his story</span>
+            <ChevronDown size={18} className="text-[var(--js-gold-light)]" style={{ animation: "scroll-cue 2.2s ease-out infinite" }} />
           </div>
         </div>
       </div>
