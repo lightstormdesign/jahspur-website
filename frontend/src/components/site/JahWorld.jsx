@@ -593,30 +593,51 @@ export const JahWorld = ({ isMobile }) => {
 
       if (key !== lastKey) {
         lastKey = key;
-        const part = smooth(clamp01((p - 0.4) / 0.6)); // the front leaves part in the second half
+        // the front leaves: grow first (anchored on the bottom edge of the view, so they swell up into
+        // the frame instead of sliding out of it), and only spread apart late in the descent
+        const grow = smooth(clamp01(p / 0.65));
+        const part = smooth(clamp01((p - 0.55) / 0.45));
+        const VB = RY + RH; // bottom of the view, in canvas units
         S.layers.forEach((L, i) => {
           const el = layerRefs.current[i];
           if (!el) return;
-          // descent: subtle for everything far, the front leaves rise and part
+          // descent: subtle for everything far; the front leaves grow first, then spread
           let g1;
-          let A;
+          let Ay;
           let dy = 0;
           if (isMobile) {
-            g1 = L.part ? 1 + 0.15 * e + 0.55 * part : 1 + L.depth * 0.25 * e;
-            A = L.part ? [CW / 2, CH * 0.6] : [CW / 2, CH]; // grow from the bottom: its edge never rises into view
+            g1 = L.part ? 1 + 0.3 * grow + 0.3 * part : 1 + L.depth * 0.25 * e;
+            Ay = CH; // grow from the bottom: its edge never rises into view
           } else {
             dy = L.part ? -360 * e : -L.depth * 330 * e;
-            g1 = L.part ? 1 + 0.1 * e + 0.5 * part : 1 + L.depth * 0.08 * e;
-            A = L.part ? [CW / 2, 1000] : [CW / 2, CH];
+            g1 = L.part ? 1 + 0.25 * grow + 0.15 * part : 1 + L.depth * 0.08 * e;
+            Ay = L.part ? VB - dy : CH; // the leaves: the point that sits on the view's bottom edge
           }
           // story: keeps drifting toward you, each layer by its depth (the front most)
-          const g2 = 1 + L.depth * zoom * z;
-          const t1x = A[0] * (1 - g1);
-          const t1y = A[1] * (1 - g1) + dy;
+          const g2 = 1 + (L.part && !isMobile ? 0.45 : L.depth) * zoom * z;
           const g = g1 * g2;
-          const gx = ZC[0] + (t1x - ZC[0]) * g2 + tx * par * L.depth * TILT_X;
-          const gy = ZC[1] + (t1y - ZC[1]) * g2 + ty * par * L.depth * TILT_Y;
-          el.style.transform = `translate3d(${(ox + gx * k).toFixed(1)}px, ${(oy + gy * k).toFixed(1)}px, 0) scale(${g.toFixed(4)})`;
+          // A: where the descent growth is anchored; Z: where the story zoom is
+          const place = (node, Ax, Z) => {
+            const t1x = Ax * (1 - g1);
+            const t1y = Ay * (1 - g1) + dy;
+            const x = Z[0] + (t1x - Z[0]) * g2 + tx * par * L.depth * TILT_X;
+            const y = Z[1] + (t1y - Z[1]) * g2 + ty * par * L.depth * TILT_Y;
+            node.style.transform = `translate3d(${(ox + x * k).toFixed(1)}px, ${(oy + y * k).toFixed(1)}px, 0) scale(${g.toFixed(4)})`;
+            return [x, y];
+          };
+          let gx;
+          let gy;
+          if (L.part && !isMobile) {
+            // desktop leaves frame both sides: each half grows in from its own screen edge, so
+            // they swell into the frame instead of being pushed off it
+            const xl = -ox / k;
+            const xr = (W - ox) / k;
+            place(el, xl, [xl, VB]);
+            const right = layerRefs.current[S.layers.length];
+            if (right) place(right, xr, [xr, VB]);
+          } else {
+            [gx, gy] = place(el, CW / 2, L.part ? [CW / 2, VB] : ZC);
+          }
           if (L.key === "sky" && rectRefs.current.sky) {
             const r = S.sky.rect;
             rectRefs.current.sky.style.transform = `translate3d(${(ox + (gx + r[0] * g) * k).toFixed(1)}px, ${(oy + (gy + r[1] * g) * k).toFixed(1)}px, 0) scale(${g.toFixed(4)})`;
@@ -681,8 +702,20 @@ export const JahWorld = ({ isMobile }) => {
                   onLoad={onLayerLoad}
                   onError={onLayerLoad}
                   className={`${abs} max-w-none select-none`}
-                  style={{ transformOrigin: "0 0", height: "auto", willChange: "transform" }}
+                  style={{ transformOrigin: "0 0", height: "auto", willChange: "transform", clipPath: L.part && !isMobile ? "inset(0 50% 0 0)" : undefined }}
                 />
+                {L.part && !isMobile && (
+                  <img
+                    ref={(el) => (layerRefs.current[S.layers.length] = el)}
+                    src={loadWorld ? L.src : undefined}
+                    alt=""
+                    aria-hidden
+                    draggable={false}
+                    decoding="async"
+                    className={`${abs} max-w-none select-none`}
+                    style={{ transformOrigin: "0 0", height: "auto", willChange: "transform", clipPath: "inset(0 0 0 50%)" }}
+                  />
+                )}
                 {L.key === "sky" && (
                   <div ref={(el) => (rectRefs.current.sky = el)} className={abs} style={{ transformOrigin: "0 0", willChange: "transform" }}>
                     <video
