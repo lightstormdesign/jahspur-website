@@ -50,7 +50,7 @@ const LANDING_EARLY_S = 1.3; // the landing starts coming in this long before th
 const MOVE_S = 8; // portal drift: toward you and to one side ...
 const PAUSE_S = 4; // ... then a pause, then mirrored
 // Burnell's world numbers (WorldHome.jsx / DesktopWorld.jsx)
-const DESCENT = { phone: 236, desktop: 200 }; // svh / vh of scroll for the descent
+const DESCENT = { phone: 100, desktop: 90 }; // svh / vh of scroll for the descent: about a screen, then the story
 const CHAPTER = 100; // per story chapter
 const STORY_ZOOM = { phone: 0.5, desktop: 0.35 }; // how much the nearest layer grows over the story
 const STORY_DIM = { phone: 0.55, desktop: 0.62 };
@@ -606,7 +606,10 @@ export const JahWorld = ({ isMobile }) => {
           let Ay;
           let dy = 0;
           if (isMobile) {
-            g1 = L.part ? 1 + 0.3 * grow + 0.3 * part : 1 + L.depth * 0.25 * e;
+            // the leaves frame both edges of the art, which a phone screen crops: start them scaled to
+            // the visible width (bottom-anchored), then grow from there
+            const fit = Math.min(1, W / k / CW);
+            g1 = L.part ? fit * (1 + 0.3 * grow + 0.3 * part) : 1 + L.depth * 0.25 * e;
             Ay = CH; // grow from the bottom: its edge never rises into view
           } else {
             dy = L.part ? -360 * e : -L.depth * 330 * e;
@@ -617,8 +620,8 @@ export const JahWorld = ({ isMobile }) => {
           const g2 = 1 + (L.part && !isMobile ? 0.45 : L.depth) * zoom * z;
           const g = g1 * g2;
           // A: where the descent growth is anchored; Z: where the story zoom is
-          const place = (node, Ax, Z) => {
-            const t1x = Ax * (1 - g1);
+          const place = (node, Ax, Z, shift = 0) => {
+            const t1x = Ax * (1 - g1) + shift;
             const t1y = Ay * (1 - g1) + dy;
             const x = Z[0] + (t1x - Z[0]) * g2 + tx * par * L.depth * TILT_X;
             const y = Z[1] + (t1y - Z[1]) * g2 + ty * par * L.depth * TILT_Y;
@@ -628,13 +631,13 @@ export const JahWorld = ({ isMobile }) => {
           let gx;
           let gy;
           if (L.part && !isMobile) {
-            // desktop leaves frame both sides: each half grows in from its own screen edge, so
-            // they swell into the frame instead of being pushed off it
+            // desktop leaves frame both sides of the art, which a 16:10 screen crops: each half sits
+            // against its own screen edge and grows in from it, so they're never pushed off
             const xl = -ox / k;
             const xr = (W - ox) / k;
-            place(el, xl, [xl, VB]);
+            place(el, 0, [xl, VB], xl);
             const right = layerRefs.current[S.layers.length];
-            if (right) place(right, xr, [xr, VB]);
+            if (right) place(right, CW, [xr, VB], xr - CW);
           } else {
             [gx, gy] = place(el, CW / 2, L.part ? [CW / 2, VB] : ZC);
           }
