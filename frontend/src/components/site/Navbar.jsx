@@ -5,7 +5,6 @@ import { NAV_LINKS, ARTIST_NAME } from "@/data/site";
 import { CubeColor } from "./Glyphs";
 import { SoundButton } from "./SoundButton";
 import { requestMotion } from "@/utils/motion";
-import { useIsMobile } from "@/hooks/useIsMobile";
 
 const NavLink = ({ to, label, active, mobile }) => (
   <Link
@@ -50,10 +49,9 @@ export const Navbar = () => {
   }, [location.pathname]);
 
   const clear = isHome && !scrolled && !open;
-  const isMobile = useIsMobile();
-  // Desktop home: the hero's big logo is the logo (as on Trev's), so the
-  // header's small one waits until you've scrolled past it. Phones keep it.
-  const hideWordmark = clear && !isMobile;
+  // The header's cube + JAH SPUR wordmark shows on every page and device,
+  // including the desktop home alongside the hero's big logo.
+  const hideWordmark = false;
 
   return (
     <header
