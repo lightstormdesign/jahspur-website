@@ -90,6 +90,10 @@ export const HERO_CUTOUT = null;
 // phone photo stands in as the background; the push-in scales about a point
 // inside him, so the background copy of him stays hidden behind the cutout.
 export const HERO_CUTOUT_MOBILE = "/jahspur-hero-mobile-cutout.webp";
+// The site's song for the speaker (top left). PENDING: no audio from Jah
+// yet; "Prophecy" is the natural pick. Drop an .m4a/.mp3 in public/ and set
+// this path; until then the speaker only asks for motion access.
+export const SONG_SRC = null;
 export const HERO_PLATE_MOBILE = "/jahspur-hero-mobile-plate.jpg";
 
 // Small announcement bubble on the Hero (one-line edit when there's news).

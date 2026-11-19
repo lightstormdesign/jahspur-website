@@ -430,3 +430,35 @@ textarea.field {
     font-size: 14px;
   }
 }
+
+/* The speaker (SoundButton.jsx), Trev's: slashed until the song plays. */
+.js-sound {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  margin-left: -8px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: #f6eedf;
+  cursor: pointer;
+  padding: 0;
+  flex: none;
+}
+.js-sound svg {
+  width: 22px;
+  height: 22px;
+  filter: drop-shadow(0 1px 6px rgba(0, 0, 0, 0.6));
+}
+.js-sound .slash {
+  transition: opacity 0.3s ease;
+}
+.js-sound.on .slash {
+  opacity: 0;
+}
+.js-sound:focus-visible {
+  outline: 1px solid var(--js-gold-light);
+  outline-offset: 2px;
+}

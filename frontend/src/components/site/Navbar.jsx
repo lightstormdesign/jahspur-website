@@ -3,6 +3,8 @@ import { Menu, X } from "lucide-react";
 import { useLocation, Link } from "react-router-dom";
 import { NAV_LINKS, ARTIST_NAME } from "@/data/site";
 import { CubeColor } from "./Glyphs";
+import { SoundButton } from "./SoundButton";
+import { requestMotion } from "@/utils/motion";
 
 const NavLink = ({ to, label, active, mobile }) => (
   <Link
@@ -56,17 +58,24 @@ export const Navbar = () => {
       }`}
     >
       <nav className="relative mx-auto flex max-w-7xl items-center justify-between px-6 py-3 lg:px-8">
-        <Link to="/" data-testid="nav-link-wordmark" className="flex items-center gap-3" aria-label={`${ARTIST_NAME}, home`}>
-          <CubeColor size={30} className="animate-wordmark-float" />
-          <span className="font-display text-lg uppercase tracking-[0.28em] text-[var(--js-text)]">{ARTIST_NAME}</span>
-        </Link>
+        {/* top left, as on Trev's: the speaker, then his logo */}
+        <div className="flex items-center gap-2">
+          <SoundButton />
+          <Link to="/" data-testid="nav-link-wordmark" className="flex items-center gap-3" aria-label={`${ARTIST_NAME}, home`}>
+            <CubeColor size={30} className="animate-wordmark-float" />
+            <span className="font-display text-lg uppercase tracking-[0.28em] text-[var(--js-text)] [text-shadow:0_1px_12px_rgba(0,0,0,0.6)]">{ARTIST_NAME}</span>
+          </Link>
+        </div>
         <div className="hidden items-center gap-7 md:flex">
           {NAV_LINKS.map((l) => (
             <NavLink key={l.label} to={l.to} label={l.label} active={location.pathname === l.to} />
           ))}
         </div>
         <div className="md:hidden">
-          <button data-testid="nav-mobile-toggle" onClick={() => setOpen((v) => !v)} className="p-1 text-white" aria-label="Menu" aria-expanded={open}>
+          <button data-testid="nav-mobile-toggle" onClick={() => {
+              if (!open) requestMotion(); // iPhone motion access, asked inside the tap (as Trev's)
+              setOpen((v) => !v);
+            }} className="p-1 text-white [filter:drop-shadow(0_1px_6px_rgba(0,0,0,0.6))]" aria-label="Menu" aria-expanded={open}>
             {open ? <X size={22} /> : <Menu size={22} />}
           </button>
         </div>

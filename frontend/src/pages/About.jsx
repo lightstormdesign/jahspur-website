@@ -199,7 +199,7 @@ function stageOpacity(p, i) {
   return (half - d) / (half - plateau);
 }
 
-export default function About() {
+export default function About({ embedded = false }) {
   const ref = useRef(null);
   const stickyRef = useRef(null);
   const [p, setP] = useState(0);
@@ -301,7 +301,9 @@ export default function About() {
   const pe = (o) => (o > 0.5 ? "auto" : "none");
 
   return (
-    <div data-testid="about-page" className="relative bg-[var(--js-black)]">
+    // embedded: rendered under the phone home's scroll-to-enter (no header or
+    // footer of its own; Home supplies them)
+    <div data-testid="about-page" className={embedded ? "relative" : "relative bg-[var(--js-black)]"}>
       {/* Fixed environment: high-desert dusk (no About footage exists yet),
           the same ridgelines as the Home dawn, held at twilight. */}
       <div aria-hidden className="fixed inset-0 z-0" style={{ background: "linear-gradient(180deg, #07080f 0%, #141322 40%, #2a1c26 72%, #3a2420 100%)" }}>
@@ -324,7 +326,7 @@ export default function About() {
       </div>
       <Fireflies />
 
-      <Navbar />
+      {!embedded && <Navbar />}
 
       {/* 55vh per stage (down from 90vh) — shorter scroll distance per
           section transition, since the previous ratio made scrolling feel
@@ -528,7 +530,7 @@ export default function About() {
       </div>
 
       <div className="relative z-10">
-        <Footer />
+        {!embedded && <Footer />}
       </div>
     </div>
   );

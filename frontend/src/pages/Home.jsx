@@ -2,6 +2,9 @@ import { Link } from "react-router-dom";
 import { Navbar } from "@/components/site/Navbar";
 import { Footer } from "@/components/site/Footer";
 import { EnterHero } from "@/components/site/EnterHero";
+import { MobileEnter } from "@/components/site/MobileEnter";
+import About from "@/pages/About";
+import { useIsMobile } from "@/hooks/useIsMobile";
 import { AlbumTablet } from "@/components/site/AlbumTablet";
 import { SignupForm } from "@/components/site/SignupForm";
 import { Reveal } from "@/components/site/Reveal";
@@ -14,6 +17,24 @@ import { ALBUM, LASTING_MESSAGE, CALL_TO_ACTION } from "@/data/site";
 // DawnExperience.jsx (the illustrated dawn world) is built but switched off.
 
 export default function Home() {
+  const isMobile = useIsMobile();
+  // Phones: scroll to enter (3D drift + parallax), then straight down into
+  // his story. Desktop keeps EnterHero + album/list until the desktop
+  // cutout and plate are in.
+  if (isMobile) {
+    return (
+      <div data-testid="home-page" className="relative bg-[var(--js-black)]">
+        <Navbar />
+        <div className="relative z-10">
+          <MobileEnter />
+        </div>
+        <About embedded />
+        <div className="relative z-10">
+          <Footer />
+        </div>
+      </div>
+    );
+  }
   return (
     <div data-testid="home-page" className="relative bg-[var(--js-black)]">
       <Navbar />
