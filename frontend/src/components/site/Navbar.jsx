@@ -49,7 +49,9 @@ export const Navbar = () => {
     return () => window.removeEventListener("scroll", onScroll);
   }, [location.pathname]);
 
-  const clear = isHome && !scrolled && !open;
+  // Home is a fixed, moving world: the header stays clear there (no backdrop
+  // blur over moving layers: it stutters, per Burnell's playbook).
+  const clear = isHome ? !open : !scrolled && !open;
   // Desktop home shows his logo once, big, in the hero; so its header is
   // just the speaker (and the links). Every other page, and phones, keep
   // the cube + JAH SPUR wordmark top left.

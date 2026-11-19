@@ -75,11 +75,9 @@ export const HERO_CTA = { label: "My Story", to: "/about" };
 
 // Hero photo: jah1, extended upward in Canva for headroom (3000x2800 source,
 // 2400px web copy).
-export const HERO_IMAGE = "/jahspur-hero-extended.jpg";
 // Phones get their own portrait crop (1080x1920, made in Canva): trees
 // across the top, him in the lower half. The hero text sits up in the
 // canopy on phones so his face stays clear.
-export const HERO_IMAGE_MOBILE = "/jahspur-hero-mobile.jpg";
 // Optional 3D depth layer: the SAME canvas with the background removed (him
 // only, transparent PNG, same size and position). When set, he pushes in
 // faster than the trees behind him for real parallax. Null = single layer.
@@ -99,10 +97,7 @@ export const SONG_SRC = null;
 // background plate. PENDING: the desktop cutout (Jah + mic, transparent PNG
 // on the same canvas). Until it's set, desktop runs the same drift and scroll
 // on the full photo as one layer; set the cutout and it becomes two layers.
-export const HERO_IMAGE_DESKTOP = "/jahspur-hero-desktop.jpg";
-export const HERO_PLATE_DESKTOP = "/jahspur-hero-desktop-plate.jpg";
 export const HERO_CUTOUT_DESKTOP = "/jahspur-hero-desktop-cutout.webp";
-export const HERO_PLATE_MOBILE = "/jahspur-hero-mobile-plate.jpg";
 
 // Small announcement bubble on the Hero (one-line edit when there's news).
 export const HERO_ANNOUNCEMENT = {
@@ -243,4 +238,48 @@ export const PRESS_QUOTES = [];
 export const TRACKING_PIXEL_IDS = {
   metaPixelId: null,
   googleAnalyticsId: null,
+};
+
+
+// --- Home world (JahWorld.jsx) ---------------------------------------------------
+// Portal (Ben over the mist loop) -> tap or scroll -> transition video plays
+// through -> the layered world, which scroll then drives (Burnell's pattern;
+// see docs in JahWorld.jsx). All media is under public/world. Bump MEDIA_V
+// whenever any of those files is re-encoded, or phones keep the old copy.
+export const MEDIA_V = 1;
+const v = (p) => `${p}?v=${MEDIA_V}`;
+
+// Rects are [x, y, w, h] in the world canvas's pixels: where each video's
+// full frame sits relative to the layers (measured by matching frames).
+// `region` is the part of the canvas the screen is fitted to at the start
+// (the transition's end frame).
+export const WORLD = {
+  phone: {
+    canvas: [941, 1672],
+    region: [0, 0, 941, 1672],
+    portal: { loop: v("/world/portal-phone.mp4"), poster: v("/world/portal-phone-poster.webp"), cutout: v("/jahspur-hero-mobile-cutout.webp"), rect: [1.88, -1.88, 937.24, 1675.88] },
+    transition: { src: v("/world/transition-phone.mp4"), poster: v("/world/transition-phone-poster.webp"), rect: [1.88, -1.88, 937.24, 1675.88] },
+    sky: { src: v("/world/sky-phone.mp4"), poster: v("/world/sky-phone-poster.webp"), rect: [1.88, -3.76, 937.24, 1678.63] },
+    layers: [
+      { key: "sky", src: v("/world/phone-sky.webp"), depth: 0 },
+      { key: "mountains", src: v("/world/phone-mountains.webp"), depth: 0.25 },
+      { key: "valley", src: v("/world/phone-valley.webp"), depth: 0.5 },
+      { key: "canopy", src: v("/world/phone-canopy.webp"), depth: 0.8 },
+      { key: "leaves", src: v("/world/phone-leaves.webp"), depth: 1, part: true },
+    ],
+  },
+  desktop: {
+    canvas: [1182, 1330],
+    region: [0, 0, 1182, 664.88],
+    portal: { loop: v("/world/portal-desktop.mp4"), poster: v("/world/portal-desktop-poster.webp"), cutout: v("/jahspur-hero-desktop-cutout.webp"), rect: [0, 0, 1182, 664.88] },
+    transition: { src: v("/world/transition-desktop.mp4"), poster: v("/world/transition-desktop-poster.webp"), rect: [0, 0, 1182, 664.88] },
+    sky: { src: v("/world/sky-desktop.mp4"), poster: v("/world/sky-desktop-poster.webp"), rect: [0, 4.73, 1182, 659.95] },
+    layers: [
+      { key: "sky", src: v("/world/desktop-sky.webp"), depth: 0 },
+      { key: "mountains", src: v("/world/desktop-mountains.webp"), depth: 0.25 },
+      { key: "valley", src: v("/world/desktop-valley.webp"), depth: 0.5 },
+      { key: "canopy", src: v("/world/desktop-canopy.webp"), depth: 0.8 },
+      { key: "leaves", src: v("/world/desktop-leaves.webp"), depth: 1, part: true },
+    ],
+  },
 };

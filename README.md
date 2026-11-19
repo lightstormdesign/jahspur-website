@@ -20,7 +20,7 @@ yarn build      # production build -> frontend/build (served by wrangler.jsonc)
 
 | Route | File | Notes |
 |---|---|---|
-| `/` | `Home.jsx` + `DawnExperience.jsx` | Pinned scroll sequence (same mechanism as Sierra's Portal→Hero, built from layers since there's no footage): half-moon night over the Sangre de Cristo ridgelines → mist + sunrise → "spur (verb)" → hero photo. Then album + list signup. |
+| `/` | `Home.jsx` + `JahWorld.jsx` | Burnell's pattern: portal (Ben's real photo cutout over a Motion Leap mist loop, 3D drift led by phone tilt / mouse) → tap, click or scroll → the Kling transition plays through (rising out of the canopy into a Taos sunset) → the layered world (living Motion Leap sky + 4 PNG layers), which scroll then drives down into the trees, ending on Jah's words and Read My Story. All media in `public/world`, data in `WORLD` in `site.js`; bump `MEDIA_V` after re-encoding any of it. Burnell's iOS safeguards are kept as-is (see comments at the top of `JahWorld.jsx`). Sources (layers, end/start frames, originals) are in `world-source/` and the git-ignored `originals/`. |
 | `/album` | `Album.jsx` | *Written in Stone* (coming soon), carved-stone tablet in place of artwork (`AlbumTablet.jsx`), "Prophecy" story, list signup, support button. |
 | `/about` | `About.jsx` | Sierra's pinned documentary mechanism, his story in his own words, his About photos. |
 | `/community` | `Community.jsx` | List signup (5,000-person goal) + the four offers he checked (Membership, Skool, GoFundMe, low-barrier offer). |
