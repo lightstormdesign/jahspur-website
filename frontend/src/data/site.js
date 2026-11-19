@@ -266,7 +266,7 @@ export const WORLD = {
     layers: [
       { key: "sky", src: v("/world/phone-sky.webp"), depth: 0 },
       { key: "mountains", src: v("/world/phone-mountains.webp"), depth: 0.05 },
-      { key: "valley", src: v("/world/phone-valley.webp"), depth: 0.16 },
+      { key: "valley", src: v("/world/phone-valley.webp"), depth: 0.08 },
       { key: "canopy", src: v("/world/phone-canopy.webp"), depth: 0.35 },
       { key: "leaves", src: v("/world/phone-leaves.webp"), depth: 1, part: true },
     ],
@@ -280,7 +280,7 @@ export const WORLD = {
     layers: [
       { key: "sky", src: v("/world/desktop-sky.webp"), depth: 0 },
       { key: "mountains", src: v("/world/desktop-mountains.webp"), depth: 0.05 },
-      { key: "valley", src: v("/world/desktop-valley.webp"), depth: 0.16 },
+      { key: "valley", src: v("/world/desktop-valley.webp"), depth: 0.08 },
       { key: "canopy", src: v("/world/desktop-canopy.webp"), depth: 0.35 },
       { key: "leaves", src: v("/world/desktop-leaves.webp"), depth: 1, part: true },
     ],
