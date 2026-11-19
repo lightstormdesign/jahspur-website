@@ -101,7 +101,7 @@ export const SONG_SRC = null;
 // on the full photo as one layer; set the cutout and it becomes two layers.
 export const HERO_IMAGE_DESKTOP = "/jahspur-hero-desktop.jpg";
 export const HERO_PLATE_DESKTOP = "/jahspur-hero-desktop-plate.jpg";
-export const HERO_CUTOUT_DESKTOP = null;
+export const HERO_CUTOUT_DESKTOP = "/jahspur-hero-desktop-cutout.webp";
 export const HERO_PLATE_MOBILE = "/jahspur-hero-mobile-plate.jpg";
 
 // Small announcement bubble on the Hero (one-line edit when there's news).
