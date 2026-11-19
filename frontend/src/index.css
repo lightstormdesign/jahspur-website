@@ -603,3 +603,15 @@ textarea.field {
   .animate-emblem-sway, .animate-emblem-glow, .animate-emblem-halo,
   .scroll-capsule-drop, .animate-cue-bob, .chevron-cascade { animation: none; }
 }
+
+/* iOS draws its own play button over a video it refused to autoplay (Low
+   Power Mode). Never show it, and let every tap reach the page instead. */
+video { pointer-events: none; }
+video::-webkit-media-controls,
+video::-webkit-media-controls-panel,
+video::-webkit-media-controls-overlay-play-button,
+video::-webkit-media-controls-start-playback-button {
+  display: none !important;
+  -webkit-appearance: none;
+  opacity: 0 !important;
+}

@@ -214,6 +214,7 @@ export const JahWorld = ({ isMobile }) => {
       })
       .catch(() => {
         if (cancelled || enteringRef.current) return;
+        v.src = S.transition.src;
         v.preload = "auto";
         v.load();
       });
@@ -416,6 +417,8 @@ export const JahWorld = ({ isMobile }) => {
     setEntered(true);
     const v = transitionRef.current;
     if (reduce || !v) return enterWorld();
+    // tapped before the download landed (or autoplay was refused, so it never started): stream it, inside the tap
+    if (!v.getAttribute("src")) v.src = S.transition.src;
     setPhase("transition");
     playTransition(v);
     watchStall(v);
