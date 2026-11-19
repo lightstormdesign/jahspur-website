@@ -252,7 +252,9 @@ const v = (p) => `${p}?v=${MEDIA_V}`;
 // Rects are [x, y, w, h] in the world canvas's pixels: where each video's
 // full frame sits relative to the layers (measured by matching frames).
 // `region` is the part of the canvas the screen is fitted to at the start
-// (the transition's end frame).
+// (the transition's end frame). `depth` sets how much a layer moves (scroll
+// and tilt); real parallax goes with 1/distance, so the far range and the
+// valley barely move and the near canopy and leaves carry the motion.
 export const WORLD = {
   phone: {
     canvas: [941, 1672],
@@ -262,8 +264,8 @@ export const WORLD = {
     sky: { src: v("/world/sky-phone.mp4"), poster: v("/world/sky-phone-poster.webp"), rect: [1.88, -3.76, 937.24, 1678.63] },
     layers: [
       { key: "sky", src: v("/world/phone-sky.webp"), depth: 0 },
-      { key: "mountains", src: v("/world/phone-mountains.webp"), depth: 0.25 },
-      { key: "valley", src: v("/world/phone-valley.webp"), depth: 0.5 },
+      { key: "mountains", src: v("/world/phone-mountains.webp"), depth: 0.05 },
+      { key: "valley", src: v("/world/phone-valley.webp"), depth: 0.16 },
       { key: "canopy", src: v("/world/phone-canopy.webp"), depth: 0.8 },
       { key: "leaves", src: v("/world/phone-leaves.webp"), depth: 1, part: true },
     ],
@@ -276,8 +278,8 @@ export const WORLD = {
     sky: { src: v("/world/sky-desktop.mp4"), poster: v("/world/sky-desktop-poster.webp"), rect: [0, 4.73, 1182, 659.95] },
     layers: [
       { key: "sky", src: v("/world/desktop-sky.webp"), depth: 0 },
-      { key: "mountains", src: v("/world/desktop-mountains.webp"), depth: 0.25 },
-      { key: "valley", src: v("/world/desktop-valley.webp"), depth: 0.5 },
+      { key: "mountains", src: v("/world/desktop-mountains.webp"), depth: 0.05 },
+      { key: "valley", src: v("/world/desktop-valley.webp"), depth: 0.16 },
       { key: "canopy", src: v("/world/desktop-canopy.webp"), depth: 0.8 },
       { key: "leaves", src: v("/world/desktop-leaves.webp"), depth: 1, part: true },
     ],
