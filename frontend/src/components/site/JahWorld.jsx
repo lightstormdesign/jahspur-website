@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { ChevronDown } from "lucide-react";
-import { WORLD, HERO_BIO, SITE_TAGLINE, SITE_LOCATION, CALL_TO_ACTION, ARTIST_NAME } from "@/data/site";
+import { WORLD, HERO_BIO, HERO_BIO_MOBILE, SITE_TAGLINE, SITE_LOCATION, CALL_TO_ACTION, ARTIST_NAME } from "@/data/site";
 import { ABOUT_STAGES } from "@/pages/About";
 import { tilt } from "@/utils/motion";
 
@@ -865,7 +865,7 @@ export const JahWorld = ({ isMobile }) => {
                 className={`font-body font-light leading-relaxed text-white/85 text-legible ${isMobile ? "mt-[clamp(1rem,2.8svh,1.5rem)] max-w-[21.5rem] text-[clamp(0.85rem,2.1svh,0.95rem)]" : "mt-6 max-w-2xl text-base"}`}
                 style={{ textWrap: isMobile ? "pretty" : "balance" }}
               >
-                {HERO_BIO}
+                {isMobile ? HERO_BIO_MOBILE : HERO_BIO}
               </p>
             </div>
             {/* scroll cue: a capsule with a gold drop falling through it, under a clear label */}
