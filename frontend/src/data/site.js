@@ -68,8 +68,9 @@ export const SONG_DESTINY = "Every song has its own destiny. Like water, it find
 export const HERO_BIO =
   "Jah Spur is a roots and culture musician from Taos, New Mexico. Raised in a family where music runs back generations, and steeped in Jamaican music since the age of thirteen, he has given more than half his life to bringing roots music to the people: a thousand-plus performances across Northern New Mexico, both coasts, and Hawaii. With his band, The Strongbacks, and a studio of his own, he is now bringing his debut album, Written in Stone, to the world.";
 
+// Phone: the full bio minus its first sentence (the tagline and location line above already say it)
 export const HERO_BIO_MOBILE =
-  "Roots and culture music from Taos, New Mexico. A thousand-plus shows, a lifetime in the music, and a debut album on the way: Written in Stone.";
+  "Raised in a family where music runs back generations, and steeped in Jamaican music since the age of thirteen, Jah Spur has given more than half his life to bringing roots music to the people: a thousand-plus performances across Northern New Mexico, both coasts, and Hawaii. With his band, The Strongbacks, and a studio of his own, he is now bringing his debut album, Written in Stone, to the world.";
 
 export const HERO_CTA = { label: "My Story", to: "/about" };
 
