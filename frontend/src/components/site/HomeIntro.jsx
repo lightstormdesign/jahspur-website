@@ -1,18 +1,37 @@
 import { Link } from "react-router-dom";
 import { Reveal } from "./Reveal";
-import { HERO_LINE, HERO_BIO, HERO_BIO_MOBILE, SITE_TAGLINE, SITE_LOCATION } from "@/data/site";
+import { LASTING_MESSAGE, HERO_BIO, HERO_BIO_MOBILE, SITE_TAGLINE, SITE_LOCATION } from "@/data/site";
 import { useIsMobile } from "@/hooks/useIsMobile";
 
 // What you land on after scrolling past his picture, full screen: his
 // world from the Prophecy answer ("misty, mystic, sunrise, half-moon,
 // mountain tops"), drawn in code (no AI): night at the top running into
 // first light at the horizon, a half-moon, layered ridgelines of the
-// Sangre de Cristos with mist drifting between them. Over it, his logo, his
-// line, a short bio and Read My Story (-> /about). No footer on Home.
+// Sangre de Cristos with mist drifting between them. Over it, his logo (phones),
+// his lasting message as the headline, a short bio and Read My Story (-> /about). No footer on Home.
+// Drawn after the real view from the mesa west of town: the Sangre de
+// Cristos along the horizon with Taos Mountain as the big, broad, rounded
+// massif (not spiky peaks), the flat sagebrush mesa in front, and the Rio
+// Grande Gorge as a dark gash cut into the mesa nearest you.
 const RIDGES = [
-  { d: "M0 250 L90 222 L170 238 L260 180 L330 196 L420 132 L500 168 L590 104 L660 140 L740 92 L820 128 L900 118 L990 170 L1080 112 L1170 150 L1260 128 L1350 170 L1440 150 L1440 400 L0 400 Z", fill: "#3a2530", h: "34%" },
-  { d: "M0 292 L120 252 L230 282 L340 222 L450 262 L560 206 L680 268 L790 232 L900 278 L1030 222 L1150 262 L1270 236 L1440 270 L1440 400 L0 400 Z", fill: "#24161b", h: "27%" },
-  { d: "M0 338 L180 330 L250 318 L420 322 L520 304 L700 308 L770 326 L980 320 L1070 302 L1260 310 L1330 330 L1440 324 L1440 400 L0 400 Z", fill: "#0e0908", h: "18%" },
+  {
+    // the range, Taos Mountain left of centre
+    d: "M0 300 C 60 290 110 270 170 262 C 230 254 260 232 300 214 C 360 186 400 150 450 128 C 500 108 560 104 610 118 C 650 130 670 150 700 160 C 730 170 760 150 800 146 C 850 142 880 170 930 182 C 990 196 1040 186 1100 196 C 1170 208 1230 224 1290 232 C 1350 240 1400 236 1440 240 L1440 400 L0 400 Z",
+    fill: "#3a2530",
+    h: "40%",
+  },
+  {
+    // the mesa: nearly flat, a gentle swell
+    d: "M0 318 C 200 312 360 316 520 312 C 700 307 860 314 1040 310 C 1200 307 1320 312 1440 309 L1440 400 L0 400 Z",
+    fill: "#24161b",
+    h: "26%",
+  },
+  {
+    // the gorge rim nearest you, with the gorge cut into it
+    d: "M0 336 L 760 332 C 800 331 820 334 836 340 L 872 372 L 900 392 L 940 392 L 972 370 L 1004 342 C 1020 335 1040 332 1080 332 L1440 334 L1440 400 L0 400 Z",
+    fill: "#0e0908",
+    h: "20%",
+  },
 ];
 
 export const HomeIntro = () => {
@@ -52,7 +71,8 @@ export const HomeIntro = () => {
           </p>
         )}
         <div className="tricolor-rule" />
-        <h2 className={`font-accent mt-6 italic leading-snug [text-wrap:balance] text-[var(--js-text)] text-legible ${isMobile ? "text-[1.45rem]" : "text-[2.6rem]"}`}>{HERO_LINE}</h2>
+        <h2 className={`font-accent mt-6 italic leading-snug [text-wrap:balance] text-[var(--js-text)] text-legible ${isMobile ? "text-[1.45rem]" : "text-[2.6rem]"}`}>{LASTING_MESSAGE[0]}</h2>
+        <p className={`font-display mt-3 uppercase tracking-[0.3em] text-gold-grad ${isMobile ? "text-sm" : "text-lg"}`}>{LASTING_MESSAGE[1]}</p>
         <p className="font-body mt-4 text-sm font-light leading-relaxed text-white/80 text-legible sm:text-[0.95rem]">{isMobile ? HERO_BIO_MOBILE : HERO_BIO}</p>
         <Link
           to="/about"
