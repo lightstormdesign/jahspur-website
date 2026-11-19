@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { ChevronDown } from "lucide-react";
-import { WORLD, HERO_BIO, HERO_BIO_MOBILE, SITE_TAGLINE, SITE_LOCATION, CALL_TO_ACTION, ARTIST_NAME } from "@/data/site";
+import { WORLD, HERO_BIO, SITE_TAGLINE, SITE_LOCATION, CALL_TO_ACTION, ARTIST_NAME } from "@/data/site";
 import { ABOUT_STAGES } from "@/pages/About";
 import { tilt } from "@/utils/motion";
 
@@ -828,7 +828,7 @@ export const JahWorld = ({ isMobile }) => {
           className={`pointer-events-none absolute inset-x-0 top-0 text-center ${isMobile ? "px-6" : "px-8"}`}
           style={{ height: isMobile ? "100svh" : "100vh", visibility: showLanding ? "visible" : "hidden" }}
         >
-          <div className={`flex h-full flex-col items-center justify-center ${isMobile ? "pb-[22svh]" : "pb-[12vh] pt-16"}`}>
+          <div className={`flex h-full flex-col items-center justify-center ${isMobile ? "pt-14" : "pt-16"}`}>
             <div
               className="relative"
               style={{
@@ -844,7 +844,7 @@ export const JahWorld = ({ isMobile }) => {
                 style={{ background: "radial-gradient(circle, rgba(226,168,56,0.3) 0%, rgba(226,168,56,0.1) 40%, transparent 68%)" }}
               />
               <div className="animate-emblem-glow relative" style={{ perspective: "700px" }}>
-                <img src="/jahspur-logo-light.png" alt={ARTIST_NAME} className="animate-emblem-sway relative h-auto w-[clamp(6.5rem,min(36vw,18svh),10rem)]" />
+                <img src="/jahspur-logo-light.png" alt={ARTIST_NAME} className={`animate-emblem-sway relative h-auto ${isMobile ? "w-[clamp(5rem,min(36vw,15svh),10rem)]" : "w-[clamp(6.5rem,min(36vw,18svh),10rem)]"}`} />
               </div>
             </div>
             <div
@@ -855,33 +855,33 @@ export const JahWorld = ({ isMobile }) => {
                 transition: `opacity 1.4s ease ${isMobile ? "0.5s" : "1s"}, transform 1.4s ease ${isMobile ? "0.5s" : "1s"}`,
               }}
             >
-              <p className={`font-display text-metallic-grad mt-10 leading-tight ${isMobile ? "text-[1.7rem]" : "text-5xl"}`} style={{ textWrap: "balance" }}>
+              <p className={`font-display text-metallic-grad leading-tight ${isMobile ? "mt-[clamp(1.5rem,4.7svh,2.5rem)] text-[1.7rem]" : "mt-10 text-5xl"}`} style={{ textWrap: "balance" }}>
                 {SITE_TAGLINE}
               </p>
               <p className={`font-cinzel tracking-[0.34em] text-[var(--js-gold)] text-legible ${isMobile ? "mt-4 text-[0.6rem]" : "mt-5 text-[0.7rem]"}`}>
                 {SITE_LOCATION.toUpperCase().split(", ").join("  ·  ")}
               </p>
               <p
-                className={`font-body mt-6 font-light leading-relaxed text-white/85 text-legible ${isMobile ? "max-w-[20.5rem] text-[0.95rem]" : "max-w-2xl text-base"}`}
-                style={{ textWrap: "balance" }}
+                className={`font-body font-light leading-relaxed text-white/85 text-legible ${isMobile ? "mt-[clamp(1rem,2.8svh,1.5rem)] max-w-[21.5rem] text-[clamp(0.85rem,2.1svh,0.95rem)]" : "mt-6 max-w-2xl text-base"}`}
+                style={{ textWrap: isMobile ? "pretty" : "balance" }}
               >
-                {isMobile ? HERO_BIO_MOBILE : HERO_BIO}
+                {HERO_BIO}
               </p>
             </div>
-          </div>
-          {/* scroll cue: a capsule with a gold drop falling through it, under a clear label */}
-          <div className={`absolute inset-x-0 flex justify-center ${isMobile ? "bottom-[88px]" : "bottom-10"}`} style={{ opacity: showLanding ? 1 : 0, transition: `opacity 1.2s ease ${isMobile ? "1.6s" : "2s"}` }}>
-            <div className="animate-cue-bob relative flex flex-col items-center">
-              <div aria-hidden className="absolute left-1/2 top-1/2 -z-10 h-[150%] w-[200%] -translate-x-1/2 -translate-y-1/2" style={{ background: TEXT_POOL, filter: "blur(12px)" }} />
-              <span className={`font-cinzel uppercase tracking-[0.34em] text-[var(--js-gold-light)] text-legible ${isMobile ? "text-[0.66rem]" : "text-[0.7rem]"}`} style={{ marginRight: "-0.34em" }}>
-                Scroll to Explore
-              </span>
-              <div className="scroll-capsule mt-3">
-                <span className="scroll-capsule-drop" />
-              </div>
-              <div className="mt-1 flex flex-col items-center text-[var(--js-gold-light)]" aria-hidden>
-                <ChevronDown size={16} className="chevron-cascade -mb-2.5" />
-                <ChevronDown size={16} className="chevron-cascade" style={{ animationDelay: "0.25s" }} />
+            {/* scroll cue: a capsule with a gold drop falling through it, under a clear label */}
+            <div className={`flex justify-center ${isMobile ? "mt-[clamp(1.25rem,4.3svh,2.25rem)]" : "mt-10"}`} style={{ opacity: showLanding ? 1 : 0, transition: `opacity 1.2s ease ${isMobile ? "1.6s" : "2s"}` }}>
+              <div className="animate-cue-bob relative flex flex-col items-center">
+                <div aria-hidden className="absolute left-1/2 top-1/2 -z-10 h-[150%] w-[200%] -translate-x-1/2 -translate-y-1/2" style={{ background: TEXT_POOL, filter: "blur(12px)" }} />
+                <span className={`font-cinzel uppercase tracking-[0.34em] text-[var(--js-gold-light)] text-legible ${isMobile ? "text-[0.66rem]" : "text-[0.7rem]"}`} style={{ marginRight: "-0.34em" }}>
+                  Scroll to Explore
+                </span>
+                <div className="scroll-capsule mt-3">
+                  <span className="scroll-capsule-drop" />
+                </div>
+                <div className="mt-1 flex flex-col items-center text-[var(--js-gold-light)]" aria-hidden>
+                  <ChevronDown size={16} className="chevron-cascade -mb-2.5" />
+                  <ChevronDown size={16} className="chevron-cascade" style={{ animationDelay: "0.25s" }} />
+                </div>
               </div>
             </div>
           </div>
