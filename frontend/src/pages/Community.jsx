@@ -25,16 +25,16 @@ export default function Community() {
       <Fireflies />
       <Navbar />
 
-      <main className="relative z-10 mx-auto w-full max-w-5xl flex-1 px-6 pb-28 pt-36 text-center sm:pt-44">
+      <main className="relative z-10 mx-auto w-full max-w-5xl flex-1 px-6 pb-16 pt-28 text-center sm:pb-28 sm:pt-44">
         <Reveal>
           <span className="overline">Community</span>
-          <h1 className="font-display mt-4 text-4xl text-[var(--js-text)] text-legible sm:text-6xl">Come Walk With Us.</h1>
-          <p className="font-accent mx-auto mt-5 max-w-xl text-xl italic leading-snug text-white/80 text-legible">
+          <h1 className="font-display mt-3 text-[2.3rem] leading-tight text-[var(--js-text)] text-legible sm:text-6xl">Come Walk With Us.</h1>
+          <p className="font-accent mx-auto mt-4 max-w-xl text-lg italic leading-snug text-white/80 text-legible sm:text-xl">
             Spiritual, community-minded, faithful, youth to elder. If the music moves you, there's a place for you here.
           </p>
         </Reveal>
 
-        <div className="animate-glow-pulse mx-auto mt-10 max-w-2xl rounded-2xl border border-[var(--js-gold)]/30 bg-black/50 px-6 py-8 backdrop-blur-sm sm:px-10">
+        <div className="animate-glow-pulse mx-auto mt-8 max-w-2xl rounded-2xl border border-[var(--js-gold)]/30 bg-black/50 px-5 py-8 backdrop-blur-sm sm:mt-10 sm:px-10">
           <p className="font-body mx-auto max-w-md text-sm font-light leading-relaxed text-white/75">
             Join the list for first listens from <span className="text-[var(--js-gold-light)]">Written in Stone</span>, word from the studio, and
             invitations to shows and gatherings.
@@ -43,16 +43,20 @@ export default function Community() {
         </div>
 
         <Reveal delay={0.1}>
-          <p className="font-display mt-8 text-[0.62rem] uppercase tracking-[0.45em] text-[var(--js-gold)]/80">{IDENTITY_WORDS.join(" · ")}</p>
+          <p className="font-display mt-8 text-[0.62rem] uppercase leading-relaxed tracking-[0.4em] text-[var(--js-gold)]/80">
+            <span className="block sm:inline">{IDENTITY_WORDS.slice(0, 3).join(" · ")}</span>
+            <span className="hidden sm:inline"> · </span>
+            <span className="block sm:inline">{IDENTITY_WORDS.slice(3).join(" · ")}</span>
+          </p>
         </Reveal>
 
         {/* ways in */}
-        <section id="support" className="mt-24 scroll-mt-28">
+        <section id="support" className="mt-16 scroll-mt-28 sm:mt-24">
           <Reveal>
             <span className="overline">Ways to Walk Closer</span>
             <div className="tricolor-rule mx-auto mt-4" />
           </Reveal>
-          <div className="mt-10 grid grid-cols-1 gap-4 text-left sm:grid-cols-2">
+          <div className="mt-8 grid grid-cols-1 gap-3 text-left sm:mt-10 sm:grid-cols-2 sm:gap-4">
             {COMMUNITY_OFFERS.map((o, i) => {
               const G = OFFER_GLYPH[o.key];
               const live = Boolean(o.href);
@@ -99,7 +103,7 @@ export default function Community() {
         </section>
 
         <Reveal delay={0.2}>
-          <div className="mt-16 flex items-center justify-center gap-7">
+          <div className="mt-12 flex items-center justify-center gap-7 sm:mt-16">
             {SOCIALS.map((s) => (
               <a
                 key={s.label}

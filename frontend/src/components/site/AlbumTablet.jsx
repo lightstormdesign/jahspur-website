@@ -1,7 +1,7 @@
 import { ALBUM, ALBUM_COVER, ARTIST_NAME } from "@/data/site";
 import { CubeGlyph, SunGlyph, SpiralGlyph, MountainGlyph, TrinityKnot, CopticCross } from "./Glyphs";
 
-// "Written in Stone" as an object: a square sandstone tablet with the title
+// "Written in Stone" as an object: a square red-jasper tablet (his stone) with the title
 // and his symbols carved into it. Stands in for album artwork, which hasn't
 // been supplied yet. Per the mapping key, a single-image album gets a
 // simpler display than the template's CD-unboxing, and with zero images this
@@ -27,7 +27,7 @@ export const AlbumTablet = ({ className = "", compact = false }) => {
       {/* chipped, uneven edge light */}
       <div aria-hidden className="pointer-events-none absolute inset-0 rounded-[6px] ring-1 ring-inset ring-[rgba(255,230,190,0.12)]" />
 
-      <div className="carved absolute inset-0 flex flex-col items-center justify-between p-[9%] text-[rgba(20,12,8,0.78)]">
+      <div className="carved absolute inset-0 flex flex-col items-center justify-between p-[9%] text-[rgba(38,8,5,0.8)]">
         <div className="flex w-full items-center justify-between">
           <SunGlyph size={glyph} strokeWidth={3.2} />
           <SpiralGlyph size={glyph} strokeWidth={3.2} />
@@ -36,18 +36,18 @@ export const AlbumTablet = ({ className = "", compact = false }) => {
         <div className="flex flex-col items-center text-center">
           <CubeGlyph size={compact ? 46 : 78} strokeWidth={3} />
           <p
-            className={`font-display mt-[6%] uppercase leading-[1.05] tracking-[0.16em] text-[rgba(24,14,9,0.82)] ${
+            className={`font-display mt-[6%] uppercase leading-[1.05] tracking-[0.16em] text-[rgba(38,8,5,0.85)] ${
               compact ? "text-xl" : "text-3xl sm:text-4xl"
             }`}
-            style={{ textShadow: "0 1px 0 rgba(255,236,205,0.3), 0 -1px 0 rgba(0,0,0,0.4)" }}
+            style={{ textShadow: "0 1px 0 rgba(255,200,170,0.32), 0 -1px 0 rgba(0,0,0,0.45)" }}
           >
             Written
             <br />
             in Stone
           </p>
           <p
-            className={`font-display mt-3 uppercase tracking-[0.42em] text-[rgba(24,14,9,0.7)] ${compact ? "text-[0.55rem]" : "text-xs"}`}
-            style={{ textShadow: "0 1px 0 rgba(255,236,205,0.25)" }}
+            className={`font-display mt-3 uppercase tracking-[0.42em] text-[rgba(38,8,5,0.75)] ${compact ? "text-[0.55rem]" : "text-xs"}`}
+            style={{ textShadow: "0 1px 0 rgba(255,200,170,0.28)" }}
           >
             {ARTIST_NAME}
           </p>

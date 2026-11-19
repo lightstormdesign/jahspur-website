@@ -4,8 +4,7 @@ import { LAYLO_URL, BOOKING_EMAIL, ARTIST_NAME } from "@/data/site";
 import { submitForm } from "@/utils/forms";
 import { MailtoFallback } from "./MailtoFallback";
 
-const input =
-  "w-full rounded-full border border-white/15 bg-black/40 px-5 py-3 font-body text-sm text-white placeholder:text-white/40 focus:border-[var(--js-gold)]/70 focus:outline-none";
+const input = "field";
 
 // The list signup, used on Home, Album, and Community. His #1 goal for the
 // site is a 5,000-person list, so this appears wherever someone is likely to
@@ -70,14 +69,14 @@ export const SignupForm = ({ cta = "Join the Family", source = "website", classN
   };
 
   return (
-    <form onSubmit={onSubmit} data-testid="signup-form" className={`grid w-full grid-cols-1 gap-3 sm:grid-cols-2 ${className}`}>
+    <form onSubmit={onSubmit} data-testid="signup-form" className={`grid w-full grid-cols-1 gap-3 text-left sm:grid-cols-2 ${className}`}>
       <input required placeholder="First name*" autoComplete="given-name" value={fields.name} onChange={set("name")} className={input} />
       <input required type="email" placeholder="Email*" autoComplete="email" value={fields.email} onChange={set("email")} className={input} />
       <input type="tel" placeholder="Phone, for texts (optional)" autoComplete="tel" value={fields.phone} onChange={set("phone")} className={`${input} sm:col-span-2`} />
       <button
         type="submit"
         disabled={state.status === "submitting"}
-        className="rounded-full bg-[var(--js-gold)] px-7 py-3 font-body text-sm font-medium text-[var(--js-black)] transition-colors hover:bg-[var(--js-gold-light)] disabled:opacity-60 sm:col-span-2"
+        className="mt-1 rounded-full bg-[var(--js-gold)] px-7 py-3.5 font-body text-[15px] font-medium text-[var(--js-black)] transition-colors hover:bg-[var(--js-gold-light)] disabled:opacity-60 sm:col-span-2"
       >
         {state.status === "submitting" ? "Sending…" : cta}
       </button>

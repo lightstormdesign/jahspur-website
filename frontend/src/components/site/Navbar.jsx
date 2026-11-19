@@ -3,6 +3,9 @@ import { Menu, X } from "lucide-react";
 import { useLocation, Link } from "react-router-dom";
 import { NAV_LINKS, ARTIST_NAME } from "@/data/site";
 import { CubeColor } from "./Glyphs";
+import { SoundButton } from "./SoundButton";
+import { requestMotion } from "@/utils/motion";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 const NavLink = ({ to, label, active, mobile }) => (
   <Link
@@ -34,11 +37,11 @@ export const Navbar = () => {
   const isHome = location.pathname === "/";
 
   useEffect(() => {
-    // Home: stay clear through the whole dawn sequence (its sky is the
-    // header's backdrop); every other page: solid after the first 40px.
+    // Home: stay clear while the hero (or the dawn intro, if switched on)
+    // is the backdrop; every other page: solid after the first 40px.
     const onScroll = () => {
-      const dawn = document.querySelector("[data-testid=dawn-experience]");
-      const limit = dawn ? dawn.offsetHeight - window.innerHeight * 0.5 : 40;
+      const clearZone = document.querySelector("[data-nav-clear], [data-testid=dawn-experience]");
+      const limit = clearZone ? clearZone.offsetHeight - window.innerHeight * 0.5 : 40;
       setScrolled(window.scrollY > limit);
     };
     onScroll();
@@ -46,7 +49,14 @@ export const Navbar = () => {
     return () => window.removeEventListener("scroll", onScroll);
   }, [location.pathname]);
 
-  const clear = isHome && !scrolled && !open;
+  // Home is a fixed, moving world: the header stays clear there (no backdrop
+  // blur over moving layers: it stutters, per Burnell's playbook).
+  const clear = isHome ? !open : !scrolled && !open;
+  // Desktop home shows his logo once, big, in the hero; so its header is
+  // just the speaker (and the links). Every other page, and phones, keep
+  // the cube + JAH SPUR wordmark top left.
+  const isMobile = useIsMobile();
+  const hideWordmark = isHome && !isMobile;
 
   return (
     <header
@@ -56,17 +66,31 @@ export const Navbar = () => {
       }`}
     >
       <nav className="relative mx-auto flex max-w-7xl items-center justify-between px-6 py-3 lg:px-8">
-        <Link to="/" data-testid="nav-link-wordmark" className="flex items-center gap-3" aria-label={`${ARTIST_NAME}, home`}>
-          <CubeColor size={30} className="animate-wordmark-float" />
-          <span className="font-display text-lg uppercase tracking-[0.28em] text-[var(--js-text)]">{ARTIST_NAME}</span>
-        </Link>
+        {/* top left, as on Trev's: the speaker, then his logo */}
+        <div className="flex items-center gap-2">
+          <SoundButton />
+          <Link
+            to="/"
+            data-testid="nav-link-wordmark"
+            className={`flex items-center gap-3 transition-opacity duration-500 ${hideWordmark ? "pointer-events-none opacity-0" : "opacity-100"}`}
+            aria-label={`${ARTIST_NAME}, home`}
+            aria-hidden={hideWordmark || undefined}
+            tabIndex={hideWordmark ? -1 : undefined}
+          >
+            <CubeColor size={30} className="animate-wordmark-float" />
+            <span className="font-display text-lg uppercase tracking-[0.28em] text-[var(--js-text)] [text-shadow:0_1px_12px_rgba(0,0,0,0.6)]">{ARTIST_NAME}</span>
+          </Link>
+        </div>
         <div className="hidden items-center gap-7 md:flex">
           {NAV_LINKS.map((l) => (
             <NavLink key={l.label} to={l.to} label={l.label} active={location.pathname === l.to} />
           ))}
         </div>
         <div className="md:hidden">
-          <button data-testid="nav-mobile-toggle" onClick={() => setOpen((v) => !v)} className="p-1 text-white" aria-label="Menu" aria-expanded={open}>
+          <button data-testid="nav-mobile-toggle" onClick={() => {
+              if (!open) requestMotion(); // iPhone motion access, asked inside the tap (as Trev's)
+              setOpen((v) => !v);
+            }} className="p-1 text-white [filter:drop-shadow(0_1px_6px_rgba(0,0,0,0.6))]" aria-label="Menu" aria-expanded={open}>
             {open ? <X size={22} /> : <Menu size={22} />}
           </button>
         </div>

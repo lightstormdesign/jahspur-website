@@ -4,7 +4,7 @@ import { ChevronDown } from "lucide-react";
 import { Navbar } from "@/components/site/Navbar";
 import { Footer } from "@/components/site/Footer";
 import { Fireflies } from "@/components/site/Fireflies";
-import { SOCIALS } from "@/data/site";
+import { SOCIALS, CALL_TO_ACTION } from "@/data/site";
 import { useIsMobile } from "@/hooks/useIsMobile";
 
 // Mobile-only discrete slide gesture tuning. Desktop's continuous
@@ -174,7 +174,8 @@ const STAGES = [
     media: "/jahspur-hero-03.jpg",
     alt: "Jah Spur singing on stage",
     body: [
-      "It is imperative that I share my music with the world. That's why I'm on this journey: to release my first album, Written in Stone.",
+      "It is imperative that I share my music with the world. My debut album, Written in Stone, is my chance to introduce myself the way I mean to be known.",
+      "Every song has its own destiny. Like water, it finds the crevices and makes its way.",
     ],
     showChevron: true,
   },
@@ -198,7 +199,7 @@ function stageOpacity(p, i) {
   return (half - d) / (half - plateau);
 }
 
-export default function About() {
+export default function About({ embedded = false }) {
   const ref = useRef(null);
   const stickyRef = useRef(null);
   const [p, setP] = useState(0);
@@ -300,7 +301,9 @@ export default function About() {
   const pe = (o) => (o > 0.5 ? "auto" : "none");
 
   return (
-    <div data-testid="about-page" className="relative bg-[var(--js-black)]">
+    // embedded: rendered under the phone home's scroll-to-enter (no header or
+    // footer of its own; Home supplies them)
+    <div data-testid="about-page" className={embedded ? "relative" : "relative bg-[var(--js-black)]"}>
       {/* Fixed environment: high-desert dusk (no About footage exists yet),
           the same ridgelines as the Home dawn, held at twilight. */}
       <div aria-hidden className="fixed inset-0 z-0" style={{ background: "linear-gradient(180deg, #07080f 0%, #141322 40%, #2a1c26 72%, #3a2420 100%)" }}>
@@ -323,7 +326,7 @@ export default function About() {
       </div>
       <Fireflies />
 
-      <Navbar />
+      {!embedded && <Navbar />}
 
       {/* 55vh per stage (down from 90vh) — shorter scroll distance per
           section transition, since the previous ratio made scrolling feel
@@ -363,7 +366,7 @@ export default function About() {
                     />
                     <img src="/jahspur-logo-light.png" alt="" aria-hidden className="h-24 w-auto object-contain opacity-95" />
                     <h2 className="font-display mt-8 max-w-xl text-3xl font-normal leading-tight text-white sm:text-4xl text-legible">
-                      Life is a journey, and to walk it is your destiny. <span className="text-gold-grad">Walk a while with me.</span>
+                      {CALL_TO_ACTION.lead} <span className="text-gold-grad">{CALL_TO_ACTION.follow}</span>
                     </h2>
                     <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
                       <Link
@@ -527,7 +530,7 @@ export default function About() {
       </div>
 
       <div className="relative z-10">
-        <Footer />
+        {!embedded && <Footer />}
       </div>
     </div>
   );

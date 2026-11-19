@@ -33,7 +33,6 @@
 }
 
 html {
-  overflow-x: clip;
   scroll-behavior: smooth;
   background: var(--js-black);
 }
@@ -102,10 +101,16 @@ body {
   text-shadow: 0 2px 28px rgba(0, 0, 0, 0.75), 0 1px 6px rgba(0, 0, 0, 0.65);
 }
 
+/* Positioning: relative by default, but never override an explicit
+   absolute/fixed layer (it used to, which dropped star layers into the page
+   flow and pushed the desktop hero text down). */
+.starfield:not(.absolute):not(.fixed) {
+  position: relative;
+}
+
 /* Desert night sky. Same star-dot technique as the template's starfield,
    warmer tint and a few gold stars. */
 .starfield {
-  position: relative;
   background-color: var(--js-black);
   background-image:
     radial-gradient(1.5px 1.5px at 20% 30%, rgba(255, 248, 232, 0.85), transparent),
@@ -341,21 +346,26 @@ body {
   animation: shimmer-sweep 3.2s ease-in-out 1.2s infinite;
 }
 
-/* Stone tablet surface for the album card. Layered noise + a warm light
-   from the upper left, so it reads as carved sandstone, not a flat box. */
+/* Red jasper tablet for the album card. Jasper is his stone (Benjamin is
+   engraved in jasper, which is where "Written in Stone" comes from), so the
+   tablet is polished red jasper: brick-red base, soft banding from a
+   stretched low-frequency noise, fine mottling on top, warm light from the
+   upper left. */
 .stone-surface {
-  background-color: #3a2c22;
+  background-color: #64190f;
   background-image:
-    radial-gradient(ellipse at 22% 12%, rgba(255, 228, 180, 0.22) 0%, transparent 55%),
-    radial-gradient(ellipse at 80% 90%, rgba(0, 0, 0, 0.45) 0%, transparent 60%),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='s'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.55' numOctaves='4'/%3E%3CfeColorMatrix values='0 0 0 0 0.85 0 0 0 0 0.72 0 0 0 0 0.56 0 0 0 0.55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23s)'/%3E%3C/svg%3E");
-  box-shadow: inset 0 1px 0 rgba(255, 235, 200, 0.15), inset 0 -18px 40px rgba(0, 0, 0, 0.45), 0 40px 120px -30px rgba(0, 0, 0, 0.9);
+    radial-gradient(ellipse at 22% 12%, rgba(255, 214, 170, 0.26) 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 92%, rgba(20, 4, 2, 0.55) 0%, transparent 62%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='b'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.006 0.045' numOctaves='3' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 0.24 0 0 0 0 0.04 0 0 0 0 0.03 0 0 0 1.1 -0.3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23b)'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='s'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='4'/%3E%3CfeColorMatrix values='0 0 0 0 0.85 0 0 0 0 0.42 0 0 0 0 0.32 0 0 0 0.22 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23s)'/%3E%3C/svg%3E");
+  background-size: auto, auto, cover, auto;
+  box-shadow: inset 0 1px 0 rgba(255, 220, 190, 0.2), inset 0 -18px 40px rgba(20, 4, 2, 0.5), 0 40px 120px -30px rgba(0, 0, 0, 0.9);
 }
 
 /* Carved line: a dark groove with a light lower lip, for petroglyph strokes
    drawn as SVG on the stone. */
 .carved {
-  filter: drop-shadow(0 1px 0 rgba(255, 236, 205, 0.28)) drop-shadow(0 -1px 0 rgba(0, 0, 0, 0.5));
+  filter: drop-shadow(0 1px 0 rgba(255, 200, 170, 0.3)) drop-shadow(0 -1px 0 rgba(0, 0, 0, 0.5));
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -388,4 +398,153 @@ body {
 @keyframes fade-in-up {
   from { opacity: 0; transform: translateY(16px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* One form-field style for every form (signup, booking). 16px text on
+   phones so iOS Safari doesn't zoom the page when a field is tapped; 14px
+   from md up. */
+.field {
+  width: 100%;
+  border-radius: 0.875rem;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(0, 0, 0, 0.42);
+  padding: 0.8rem 1.1rem;
+  font-family: "Outfit", sans-serif;
+  font-size: 16px;
+  color: #fff;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+.field::placeholder {
+  color: rgba(255, 255, 255, 0.42);
+}
+.field:focus {
+  outline: none;
+  border-color: rgba(226, 168, 56, 0.7);
+  background: rgba(0, 0, 0, 0.55);
+}
+textarea.field {
+  resize: vertical;
+}
+@media (min-width: 768px) {
+  .field {
+    font-size: 14px;
+  }
+}
+
+/* The speaker (SoundButton.jsx), Trev's: slashed until the song plays. */
+.js-sound {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  margin-left: -8px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: #f6eedf;
+  cursor: pointer;
+  padding: 0;
+  flex: none;
+}
+.js-sound svg {
+  width: 22px;
+  height: 22px;
+  filter: drop-shadow(0 1px 6px rgba(0, 0, 0, 0.6));
+}
+.js-sound .slash {
+  transition: opacity 0.3s ease;
+}
+.js-sound.on .slash {
+  opacity: 0;
+}
+.js-sound:focus-visible {
+  outline: 1px solid var(--js-gold-light);
+  outline-offset: 2px;
+}
+
+/* Scroll to Enter (MobileEnter.jsx): Trev's "Tap to Enter" treatment */
+.js-enter {
+  display: grid;
+  place-items: center;
+  isolation: isolate;
+  padding: 14px 10px;
+}
+.js-enter > span {
+  grid-area: 1 / 1;
+  font-family: "Marcellus", serif;
+  font-weight: 400;
+  font-size: 19px;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+  letter-spacing: 0.32em;
+  margin-right: -0.32em;
+}
+.js-enter .word {
+  color: #fbf3e3;
+  -webkit-text-stroke: 0.35px #fbf3e3;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.75), 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+.js-enter .halo {
+  width: 190%;
+  height: 640%;
+  border-radius: 50%;
+  z-index: -2;
+  letter-spacing: 0;
+  margin: 0;
+  background: radial-gradient(closest-side, rgba(12, 8, 5, 0.66), rgba(12, 8, 5, 0.34) 52%, rgba(12, 8, 5, 0));
+}
+.js-enter .glow {
+  color: #f1c472;
+  filter: blur(10px);
+  opacity: 0.4;
+  z-index: -1;
+  animation: js-breathe 5s ease-in-out infinite alternate;
+}
+@keyframes js-breathe {
+  from { opacity: 0.3; }
+  to { opacity: 0.6; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .js-enter .glow { animation: none; }
+}
+
+/* Home portal (MobileEnter.jsx), Soleil's treatment: a faint dark pool
+   right behind the copy, the logo with a dark close shadow and a warm
+   breathing glow, and Scroll to Enter with the same dark-and-warm shadow. */
+.js-pool {
+  background: radial-gradient(ellipse at center, rgba(10, 4, 4, 0.55) 0%, rgba(10, 4, 4, 0.25) 45%, transparent 72%);
+  filter: blur(14px);
+}
+@keyframes js-logo-glow {
+  0%, 100% { filter: drop-shadow(0 2px 4px rgba(10, 4, 4, 0.6)) drop-shadow(0 0 12px rgba(250, 214, 170, 0.35)) drop-shadow(0 0 30px rgba(226, 168, 56, 0.28)); }
+  50% { filter: drop-shadow(0 2px 4px rgba(10, 4, 4, 0.6)) drop-shadow(0 0 18px rgba(255, 228, 190, 0.6)) drop-shadow(0 0 46px rgba(226, 168, 56, 0.45)); }
+}
+.js-logo-glow { animation: js-logo-glow 4s ease-in-out infinite; }
+@keyframes js-cue-glow {
+  0%, 100% { text-shadow: 0 1px 4px rgba(10, 4, 4, 0.9), 0 2px 16px rgba(10, 4, 4, 0.7), 0 0 10px rgba(250, 214, 170, 0.45); }
+  50% { text-shadow: 0 1px 4px rgba(10, 4, 4, 0.9), 0 2px 16px rgba(10, 4, 4, 0.7), 0 0 18px rgba(255, 228, 190, 0.85), 0 0 30px rgba(226, 168, 56, 0.5); }
+}
+.js-cue {
+  font-family: "Marcellus", serif;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.26em;
+  margin-right: -0.26em;
+  white-space: nowrap;
+  line-height: 1;
+  -webkit-text-stroke: 0.4px #fff;
+  animation: js-cue-glow 4s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .js-logo-glow, .js-cue { animation: none; }
+  .js-cue { text-shadow: 0 1px 4px rgba(10, 4, 4, 0.9), 0 2px 16px rgba(10, 4, 4, 0.7), 0 0 10px rgba(250, 214, 170, 0.45); }
+}
+
+/* Desktop home logo: a still dark shadow and a faint warm edge, no
+   breathing, so it sits back behind him and the header */
+.js-logo-calm {
+  opacity: 0.92;
+  filter: drop-shadow(0 2px 4px rgba(10, 4, 4, 0.6)) drop-shadow(0 0 14px rgba(250, 214, 170, 0.18));
 }
