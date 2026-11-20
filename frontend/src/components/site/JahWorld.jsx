@@ -528,6 +528,22 @@ export const JahWorld = ({ isMobile }) => {
         lastSize = size;
         placeRect(rectRefs.current.loop, S.portal.rect, k, ox, oy);
         placeRect(rectRefs.current.ben, S.portal.rect, k, ox, oy);
+        // A phone is narrower than the portal art, so the cover fit crops its
+        // sides and zooms everything in. Ben is his own cutout over the plate
+        // (the transition plays on the empty plate), so he alone is scaled back
+        // to his size in the full composition, held to the bottom-left corner
+        // of the screen, where he stands.
+        const bw = rectRefs.current.ben;
+        if (bw && isMobile) {
+          // ...but never so small that the cutout's right edge (where the mic
+          // stand and guitar neck run off the photo) comes into view
+          const edge = (W + 16) / (ox + RW * k); // + his sideways drift (up to 14px)
+          const fit = Math.min(1, Math.max(W / k / RW, edge));
+          const left = parseFloat(bw.style.left);
+          const top = parseFloat(bw.style.top);
+          bw.style.transformOrigin = `${(-left).toFixed(1)}px ${(H - top).toFixed(1)}px`;
+          bw.style.transform = fit < 0.999 ? `scale(${fit.toFixed(4)})` : "";
+        }
         placeRect(rectRefs.current.transition, S.transition.rect, k, ox, oy);
         layerRefs.current.forEach((el) => el && (el.style.width = `${(CW * k).toFixed(1)}px`));
         const sk = rectRefs.current.sky;
