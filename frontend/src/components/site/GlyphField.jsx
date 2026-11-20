@@ -1,30 +1,24 @@
-import { GLYPHS } from "./Glyphs";
-
-// Site-wide ambient layer (replaces the template's SacredGeometryField):
-// his symbols, very faint, each turning slowly in its own direction and
-// tempo so the corners never move in sync. Meant to be felt, not noticed.
-// Hidden on the Home page's dawn sequence by its own opaque sky layers.
-const PLACEMENTS = [
-  { glyph: "trinity", style: { top: "9%", left: "-3%" }, size: 260, dur: 240, dir: "normal" },
-  { glyph: "coptic", style: { top: "6%", right: "-4%" }, size: 220, dur: 300, dir: "reverse" },
-  { glyph: "cube", style: { bottom: "-6%", left: "6%" }, size: 240, dur: 360, dir: "reverse" },
-  { glyph: "sun", style: { bottom: "4%", right: "-2%" }, size: 280, dur: 420, dir: "normal" },
-  { glyph: "spiral", style: { top: "44%", left: "46%" }, size: 180, dur: 380, dir: "normal" },
-];
+// Site-wide sacred geometry: his lotus seal (a lotus rosette around a Trinity
+// Knot, ringed in the red and green of his cube), in the same top-right spot
+// and with the same settings as Burnell's and Trev's: centred at 91% / 12%,
+// 34vmax wide, one turn every 225s in reverse, at Burnell's 7% opacity.
+//
+// z-[1]: above each page's fixed photo background (z-0) and below its content
+// (z-10). On Home the world's stage (z-10) covers it, as on the other sites.
+const LOTUS = { x: "91%", y: "12%", size: "34vmax", dur: 225, opacity: 0.07 };
 
 export const GlyphField = () => (
-  <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden text-[var(--js-gold-light)]">
-    {PLACEMENTS.map(({ glyph, style, size, dur, dir }, i) => {
-      const G = GLYPHS[glyph];
-      return (
-        <div
-          key={i}
-          className="glyph-turn absolute"
-          style={{ ...style, opacity: 0.045, animationDuration: `${dur}s`, animationDirection: dir }}
-        >
-          <G size={size} strokeWidth={0.9} />
-        </div>
-      );
-    })}
+  <div aria-hidden className="pointer-events-none fixed inset-0 z-[1] overflow-hidden">
+    {/* centring on the wrapper, the turn on the image (both are transforms) */}
+    <div className="absolute aspect-square -translate-x-1/2 -translate-y-1/2" style={{ left: LOTUS.x, top: LOTUS.y, width: LOTUS.size, opacity: LOTUS.opacity }}>
+      <img
+        src="/jahspur-lotus.webp"
+        alt=""
+        draggable={false}
+        decoding="async"
+        className="glyph-turn h-full w-full max-w-none select-none"
+        style={{ animationDuration: `${LOTUS.dur}s`, animationDirection: "reverse" }}
+      />
+    </div>
   </div>
 );
