@@ -267,6 +267,12 @@ export const JahWorld = ({ isMobile }) => {
     return () => clearTimeout(t);
   }, [entered]);
 
+  // no scrollbar on Home (its appearing at the landing narrowed the page and re-fit the world)
+  useEffect(() => {
+    document.documentElement.classList.add("no-scrollbar");
+    return () => document.documentElement.classList.remove("no-scrollbar");
+  }, []);
+
   // --- page scroll: locked until the world ------------------------------------
   useEffect(() => {
     const root = document.documentElement;
@@ -274,7 +280,10 @@ export const JahWorld = ({ isMobile }) => {
       window.scrollTo(0, 0);
       root.style.overflow = "";
       root.style.overscrollBehaviorY = "none";
-      root.style.scrollSnapType = "y proximity";
+      // chapters settle gently on phones (a flick). Not on desktop: Chrome pulls
+      // every short mouse-wheel burst back to the last chapter, so the page
+      // fights the wheel (measured: up to 225px backwards per burst).
+      root.style.scrollSnapType = isMobile ? "y proximity" : "";
       document.body.style.overscrollBehaviorY = "none";
       loopRef.current?.pause();
     } else {
@@ -286,7 +295,7 @@ export const JahWorld = ({ isMobile }) => {
       root.style.scrollSnapType = "";
       document.body.style.overscrollBehaviorY = "";
     };
-  }, [phase]);
+  }, [phase, isMobile]);
 
   // --- transition --------------------------------------------------------------
   const enterWorld = () => {

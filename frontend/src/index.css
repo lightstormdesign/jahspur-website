@@ -631,3 +631,9 @@ video::-webkit-media-controls-start-playback-button {
 @media (prefers-reduced-motion: reduce) {
   .portal-flower-fade-in, .portal-flower-breathe { animation: none !important; }
 }
+
+/* the Home world scrolls without a scrollbar: it appearing when the world
+   starts made the page ~15px narrower, so every layer re-fit at the landing
+   (a pixelated flash and a shift to the left). Burnell's fix. */
+html.no-scrollbar { scrollbar-width: none; }
+html.no-scrollbar::-webkit-scrollbar { display: none; }
