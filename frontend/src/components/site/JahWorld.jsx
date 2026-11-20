@@ -38,6 +38,9 @@ import { PortalLotus } from "@/components/site/PortalLotus";
 
 
 const OVERSCAN = 1.05; // room for drift/tilt without showing an edge
+// how far (canvas units) the front leaves' cut edges sit past the screen edge:
+// more than the mouse/tilt can slide them (TILT_X at depth 1), so never seen
+const EDGE_SPARE = 36;
 const SCROLL_EASE = 5; // how quickly the world catches up to the finger (per s), Burnell's
 const TILT_X = 28; // canvas px of sideways parallax at full tilt, nearest layer
 const TILT_Y = 18;
@@ -165,6 +168,7 @@ export const JahWorld = ({ isMobile }) => {
   const [fading, setFading] = useState(false); // the held last frame is fading out
   const [holdGone, setHoldGone] = useState(false); // ... and gone (visibility: hidden)
   const [landingEarly, setLandingEarly] = useState(false);
+  const [portalGone, setPortalGone] = useState(false); // the portal's fades are done: stop painting it
   const [reduce] = useState(() => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
 
   const stageRef = useRef(null);
@@ -255,6 +259,13 @@ export const JahWorld = ({ isMobile }) => {
     const t = setTimeout(() => setHoldGone(true), 950);
     return () => clearTimeout(t);
   }, [phase, layersReady]);
+
+  // the portal hands over slowly (shading lifts over ~3s), then stops painting
+  useEffect(() => {
+    if (!entered) return;
+    const t = setTimeout(() => setPortalGone(true), 3400);
+    return () => clearTimeout(t);
+  }, [entered]);
 
   // --- page scroll: locked until the world ------------------------------------
   useEffect(() => {
@@ -635,7 +646,9 @@ export const JahWorld = ({ isMobile }) => {
           if (isMobile) {
             // the leaves frame both edges of the art, which a phone screen crops: start them scaled to
             // the visible width (bottom-anchored), then grow from there
-            const fit = Math.min(1, W / k / CW);
+            // (a little wider than the screen: tilt slides them up to TILT_X either way,
+            // and their cut edges must never come into view)
+            const fit = Math.min(1, (W / k + 2 * EDGE_SPARE) / CW);
             g1 = L.part ? fit * (1 + 0.3 * grow + 0.3 * part) : 1 + L.depth * 0.25 * e;
             Ay = CH; // grow from the bottom: its edge never rises into view
           } else {
@@ -662,9 +675,9 @@ export const JahWorld = ({ isMobile }) => {
             // against its own screen edge and grows in from it, so they're never pushed off
             const xl = -ox / k;
             const xr = (W - ox) / k;
-            place(el, 0, [xl, VB], xl);
+            place(el, 0, [xl - EDGE_SPARE, VB], xl - EDGE_SPARE);
             const right = layerRefs.current[S.layers.length];
-            if (right) place(right, CW, [xr, VB], xr - CW);
+            if (right) place(right, CW, [xr + EDGE_SPARE, VB], xr + EDGE_SPARE - CW);
           } else {
             [gx, gy] = place(el, CW / 2, L.part ? [CW / 2, VB] : ZC);
           }
@@ -821,36 +834,36 @@ export const JahWorld = ({ isMobile }) => {
         </div>
         {phase === "transition" && <div aria-hidden className="pointer-events-none absolute inset-0" style={{ background: "rgba(0,0,0,0.012)" }} />}
 
-        {/* ---------- Ben, the portal's shading and copy ---------- */}
-        <div
-          className="absolute inset-0"
-          style={{
-            opacity: entered ? 0 : 1,
-            transition: "opacity 0.55s ease",
-            visibility: transitionShown || inWorld ? "hidden" : "visible",
-          }}
-        >
-          {!isMobile && <PortalLotus spin top="18%" />}
-          <div ref={(el) => (rectRefs.current.ben = el)} className={abs}>
-            <img
-              ref={benRef}
-              src={S.portal.cutout}
-              alt="Jah Spur singing and playing guitar"
-              draggable={false}
-              className="h-full w-full select-none will-change-transform"
-              style={{ transformOrigin: isMobile ? "45% 70%" : "8% 40%" }}
-            />
+        {/* ---------- Ben, the portal's shading and copy ----------
+            On tap each lets go at its own pace: the words go first, Ben
+            dissolves a little slower, and the shading holds a moment, then
+            lifts gently while the transition plays underneath it. */}
+        <div className="absolute inset-0" style={{ visibility: portalGone || inWorld ? "hidden" : "visible" }}>
+          <div className="absolute inset-0" style={{ opacity: entered ? 0 : 1, transition: "opacity 1.2s ease" }}>
+            {!isMobile && <PortalLotus spin top="18%" />}
+            <div ref={(el) => (rectRefs.current.ben = el)} className={abs}>
+              <img
+                ref={benRef}
+                src={S.portal.cutout}
+                alt="Jah Spur singing and playing guitar"
+                draggable={false}
+                className="h-full w-full select-none will-change-transform"
+                style={{ transformOrigin: isMobile ? "45% 70%" : "8% 40%" }}
+              />
+            </div>
           </div>
-          <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[48%]" style={{ background: "linear-gradient(to bottom, rgba(10,4,4,0.7) 0%, rgba(10,4,4,0.36) 45%, transparent 100%)" }} />
-          <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-[34%]" style={{ background: "linear-gradient(to top, rgba(10,4,4,0.78) 0%, rgba(10,4,4,0.38) 45%, transparent 100%)" }} />
-          <div aria-hidden className="pointer-events-none absolute inset-0" style={{ background: "radial-gradient(ellipse 85% 75% at 50% 48%, transparent 45%, rgba(10,4,4,0.58) 100%)" }} />
-          {!isMobile && (
-            <div aria-hidden className="pointer-events-none absolute inset-0" style={{ background: "linear-gradient(to right, transparent 38%, rgba(10,4,4,0.35) 62%, rgba(10,4,4,0.55) 100%)" }} />
-          )}
+          <div className="pointer-events-none absolute inset-0" style={{ opacity: entered ? 0 : 1, transition: "opacity 2.6s ease 0.5s" }}>
+            <div aria-hidden className="absolute inset-x-0 top-0 h-[48%]" style={{ background: "linear-gradient(to bottom, rgba(10,4,4,0.7) 0%, rgba(10,4,4,0.36) 45%, transparent 100%)" }} />
+            <div aria-hidden className="absolute inset-x-0 bottom-0 h-[34%]" style={{ background: "linear-gradient(to top, rgba(10,4,4,0.78) 0%, rgba(10,4,4,0.38) 45%, transparent 100%)" }} />
+            <div aria-hidden className="absolute inset-0" style={{ background: "radial-gradient(ellipse 85% 75% at 50% 48%, transparent 45%, rgba(10,4,4,0.58) 100%)" }} />
+            {!isMobile && (
+              <div aria-hidden className="absolute inset-0" style={{ background: "linear-gradient(to right, transparent 38%, rgba(10,4,4,0.35) 62%, rgba(10,4,4,0.55) 100%)" }} />
+            )}
+          </div>
+          <div className="absolute inset-0" style={{ opacity: entered ? 0 : 1, transition: "opacity 0.6s ease" }}>
           {/* his lotus seal, top left (mirroring Burnell's and Trev's top-right portal flower);
               on desktop it sits behind Ben (he stands on the left), see above */}
           {isMobile && <PortalLotus />}
-
           {isMobile ? (
             <div className="pointer-events-none absolute inset-x-0 flex justify-center" style={{ top: "25.5svh", transform: "translateY(-50%)" }}>
               <div className="relative flex flex-col items-center">
@@ -873,6 +886,7 @@ export const JahWorld = ({ isMobile }) => {
               </div>
             </div>
           )}
+          </div>
         </div>
 
         {/* ---------- story chapters, faded in and out by scroll position ---------- */}
