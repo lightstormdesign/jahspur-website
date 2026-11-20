@@ -4,6 +4,7 @@ import { ChevronDown } from "lucide-react";
 import { WORLD, HERO_BIO, HERO_BIO_MOBILE, SITE_TAGLINE, SITE_LOCATION, CALL_TO_ACTION, ARTIST_NAME } from "@/data/site";
 import { ABOUT_STAGES } from "@/pages/About";
 import { tilt } from "@/utils/motion";
+import { PortalLotus } from "@/components/site/PortalLotus";
 
 // Jah Spur's home: portal -> transition -> world. Burnell's pattern
 // (burnellwebsite docs/SCROLL_WORLD_PLAYBOOK.md), one component for both sets
@@ -823,6 +824,8 @@ export const JahWorld = ({ isMobile }) => {
           {!isMobile && (
             <div aria-hidden className="pointer-events-none absolute inset-0" style={{ background: "linear-gradient(to right, transparent 38%, rgba(10,4,4,0.35) 62%, rgba(10,4,4,0.55) 100%)" }} />
           )}
+          {/* his lotus seal, top right, like Burnell's and Trev's portal flower */}
+          {isMobile ? <PortalLotus /> : <PortalLotus spin top="18%" />}
 
           {isMobile ? (
             <div className="pointer-events-none absolute inset-x-0 flex justify-center" style={{ top: "25.5svh", transform: "translateY(-50%)" }}>
