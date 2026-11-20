@@ -170,7 +170,8 @@ export const JahWorld = ({ isMobile }) => {
   const [landingEarly, setLandingEarly] = useState(false);
   const [loopShown, setLoopShown] = useState(false); // the mist loop has drawn a frame (until then: its still)
   const [skyShown, setSkyShown] = useState(false); // the sky video has drawn a frame (until then: the sky layer)
-  const [portalGone, setPortalGone] = useState(false); // the portal's fades are done: stop painting it
+  const [portalGone, setPortalGone] = useState(false);
+  const [benShown, setBenShown] = useState(false); // his portrait has loaded and decoded: fade it in // the portal's fades are done: stop painting it
   const [reduce] = useState(() => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
 
   const stageRef = useRef(null);
@@ -283,6 +284,19 @@ export const JahWorld = ({ isMobile }) => {
     const v = loopRef.current;
     if (v) v.play().catch(() => {});
   }, []);
+
+  // Ben's portrait fades in once it's fully decoded (never half-painted). Already cached? The
+  // effect catches an image that finished before React attached onLoad.
+  const showBen = () => {
+    const im = benRef.current;
+    if (!im) return;
+    const go = () => requestAnimationFrame(() => setBenShown(true));
+    if (im.decode) im.decode().then(go, go);
+    else go();
+  };
+  useEffect(() => {
+    if (benRef.current?.complete && benRef.current.naturalWidth) showBen();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // the portal hands over slowly (shading lifts over ~3s), then stops painting
   useEffect(() => {
@@ -975,8 +989,10 @@ export const JahWorld = ({ isMobile }) => {
                 src={S.portal.cutout}
                 alt="Jah Spur singing and playing guitar"
                 draggable={false}
+                onLoad={showBen}
                 className="h-full w-full select-none will-change-transform"
-                style={{ transformOrigin: isMobile ? "45% 70%" : "8% 40%" }}
+                // he fades in once fully loaded and decoded, instead of appearing all at once
+                style={{ transformOrigin: isMobile ? "45% 70%" : "8% 40%", opacity: benShown ? 1 : 0, transition: "opacity 1.6s cubic-bezier(0.25, 0.1, 0.25, 1)" }}
               />
             </div>
           </div>
