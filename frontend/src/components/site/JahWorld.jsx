@@ -808,6 +808,7 @@ export const JahWorld = ({ isMobile }) => {
             visibility: transitionShown || inWorld ? "hidden" : "visible",
           }}
         >
+          {!isMobile && <PortalLotus spin top="18%" />}
           <div ref={(el) => (rectRefs.current.ben = el)} className={abs}>
             <img
               ref={benRef}
@@ -824,8 +825,9 @@ export const JahWorld = ({ isMobile }) => {
           {!isMobile && (
             <div aria-hidden className="pointer-events-none absolute inset-0" style={{ background: "linear-gradient(to right, transparent 38%, rgba(10,4,4,0.35) 62%, rgba(10,4,4,0.55) 100%)" }} />
           )}
-          {/* his lotus seal, top right, like Burnell's and Trev's portal flower */}
-          {isMobile ? <PortalLotus /> : <PortalLotus spin top="18%" />}
+          {/* his lotus seal, top left (mirroring Burnell's and Trev's top-right portal flower);
+              on desktop it sits behind Ben (he stands on the left), see above */}
+          {isMobile && <PortalLotus />}
 
           {isMobile ? (
             <div className="pointer-events-none absolute inset-x-0 flex justify-center" style={{ top: "25.5svh", transform: "translateY(-50%)" }}>
