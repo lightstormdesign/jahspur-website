@@ -675,7 +675,6 @@ export const JahWorld = ({ isMobile }) => {
     };
   }, [isMobile]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const coarse = typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches; // touchscreen
   const inWorld = phase === "world";
   const showLanding = inWorld || landingEarly;
   // the portal loop sits above the world: gone the moment the world phase starts (the held last frame covers it)
@@ -842,10 +841,9 @@ export const JahWorld = ({ isMobile }) => {
                 <img src="/jahspur-logo-light.png" alt="Jah Spur and The Strongbacks" className="js-logo-calm relative h-auto w-[min(15rem,17vw,30vh)]" />
                 <span className="relative mt-[clamp(1.1rem,3vh,1.8rem)] flex items-center gap-4" style={{ animation: "breathe 3.2s ease-in-out infinite" }}>
                   <span aria-hidden className="h-px w-10 bg-gradient-to-r from-transparent to-white/90" />
-                  <span className="js-cue text-[clamp(1rem,1.25vw,1.4rem)]">Scroll to Enter</span>
+                  <span className="js-cue text-[clamp(1rem,1.25vw,1.4rem)]">Tap to Enter</span>
                   <span aria-hidden className="h-px w-10 bg-gradient-to-l from-transparent to-white/90" />
                 </span>
-                <span className="relative mt-3 font-display text-[0.62rem] uppercase tracking-[0.4em] text-white/70 [text-shadow:0_1px_8px_rgba(0,0,0,0.8)]">{coarse ? "or tap" : "or click"}</span>
               </div>
             </div>
           )}
