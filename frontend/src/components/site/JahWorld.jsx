@@ -675,6 +675,7 @@ export const JahWorld = ({ isMobile }) => {
     };
   }, [isMobile]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const coarse = typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches; // touchscreen
   const inWorld = phase === "world";
   const showLanding = inWorld || landingEarly;
   // the portal loop sits above the world: gone the moment the world phase starts (the held last frame covers it)
@@ -844,7 +845,7 @@ export const JahWorld = ({ isMobile }) => {
                   <span className="js-cue text-[clamp(1rem,1.25vw,1.4rem)]">Scroll to Enter</span>
                   <span aria-hidden className="h-px w-10 bg-gradient-to-l from-transparent to-white/90" />
                 </span>
-                <span className="relative mt-3 font-display text-[0.62rem] uppercase tracking-[0.4em] text-white/70 [text-shadow:0_1px_8px_rgba(0,0,0,0.8)]">or click</span>
+                <span className="relative mt-3 font-display text-[0.62rem] uppercase tracking-[0.4em] text-white/70 [text-shadow:0_1px_8px_rgba(0,0,0,0.8)]">{coarse ? "or tap" : "or click"}</span>
               </div>
             </div>
           )}
