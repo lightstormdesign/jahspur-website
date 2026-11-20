@@ -610,9 +610,11 @@ export const JahWorld = ({ isMobile }) => {
         layerRefs.current.forEach((el) => el && (el.style.width = `${(CW * k).toFixed(1)}px`));
         const cv = canvasRef.current;
         if (cv) {
-          const dpr = Math.min(window.devicePixelRatio || 1, 2);
-          cv.width = Math.round(W * dpr);
-          cv.height = Math.round(H * dpr);
+          // one canvas pixel per screen point: the art is 1182px stretched ~1.4x to fill the
+          // screen, so a denser (Retina) canvas adds no detail, only 4x the pixels to fill
+          // every frame (measured: ~100ms a frame at 2x, i.e. clunky)
+          cv.width = Math.round(W);
+          cv.height = Math.round(H);
         }
         const sk = rectRefs.current.sky;
         if (sk) {
@@ -761,7 +763,7 @@ export const JahWorld = ({ isMobile }) => {
           ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
           ctx.clearRect(0, 0, W, H);
           ctx.imageSmoothingEnabled = true;
-          ctx.imageSmoothingQuality = "high";
+          ctx.imageSmoothingQuality = "low"; // bilinear: same look when enlarging, much cheaper
           draws.forEach(([node, x, y, g]) => {
             const im = node.half ? node.el : node;
             if (!im.complete || !im.naturalWidth) return;
