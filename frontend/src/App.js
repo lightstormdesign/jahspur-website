@@ -10,7 +10,6 @@ import Contact from "@/pages/Contact";
 import Shows from "@/pages/Shows";
 import { TrackingPixel } from "@/components/site/TrackingPixel";
 import { GlowCursor } from "@/components/site/GlowCursor";
-import { GlyphField } from "@/components/site/GlyphField";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -45,7 +44,6 @@ function App() {
         <ScrollToTop />
         <PageTitle />
         <TrackingPixel />
-        <GlyphField />
         <GlowCursor />
         <Routes>
           <Route path="/" element={<Home />} />
