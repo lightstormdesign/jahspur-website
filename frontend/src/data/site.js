@@ -21,8 +21,8 @@ export const NAV_LINKS = [
   { label: "Contact", to: "/contact" },
 ];
 
-export const SITE_TAGLINE = "Roots & Culture Music";
-export const SITE_GENRE_TAGS = "ROOTS · CULTURE · SPIRIT";
+export const SITE_TAGLINE = "Roots Music";
+export const SITE_GENRE_TAGS = "ROOTS · SPIRIT · UNITY";
 
 // His 3–5 words, verbatim.
 export const IDENTITY_WORDS = ["Radical", "Cultural", "Spiritual", "Wisdom", "Unity"];
@@ -66,7 +66,7 @@ export const CALL_TO_ACTION = {
 export const SONG_DESTINY = "Every song has its own destiny. Like water, it finds the crevices and makes its way.";
 
 export const HERO_BIO =
-  "Jah Spur is a roots and culture musician from Taos, New Mexico. Raised in a family where music runs back generations, and steeped in Jamaican music since the age of thirteen, he has given more than half his life to bringing roots music to the people: a thousand-plus performances across Northern New Mexico, both coasts, and Hawaii. With his band, The Strongbacks, and a studio of his own, he is now bringing his debut album, Written in Stone, to the world.";
+  "Jah Spur is a roots musician from Taos, New Mexico. Raised in a family where music runs back generations, and steeped in Jamaican music since the age of thirteen, he has given more than half his life to bringing roots music to the people: a thousand-plus performances across Northern New Mexico, both coasts, and Hawaii. With his band, The Strongbacks, and a studio of his own, he is now bringing his debut album, Written in Stone, to the world.";
 
 // Phone: the full bio minus its first sentence (the tagline and location line above already say it)
 export const HERO_BIO_MOBILE =
