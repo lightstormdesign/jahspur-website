@@ -829,9 +829,8 @@ export const JahWorld = ({ isMobile }) => {
               <div className="relative flex flex-col items-center">
                 <div aria-hidden className="js-pool absolute left-1/2 top-1/2 h-[260%] w-[130%] -translate-x-1/2 -translate-y-1/2" />
                 <span className="js-cue relative text-[1.25rem]" style={{ animation: "breathe 3.2s ease-in-out infinite" }}>
-                  Scroll to Enter
+                  Tap to Enter
                 </span>
-                <span className="relative mt-2 font-display text-[0.6rem] uppercase tracking-[0.4em] text-white/75 [text-shadow:0_1px_8px_rgba(0,0,0,0.8)]">or tap</span>
               </div>
             </div>
           ) : (
