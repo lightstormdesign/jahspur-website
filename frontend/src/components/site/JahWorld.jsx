@@ -168,11 +168,14 @@ export const JahWorld = ({ isMobile }) => {
   const [fading, setFading] = useState(false); // the held last frame is fading out
   const [holdGone, setHoldGone] = useState(false); // ... and gone (visibility: hidden)
   const [landingEarly, setLandingEarly] = useState(false);
+  const [loopShown, setLoopShown] = useState(false); // the mist loop has drawn a frame (until then: its still)
+  const [skyShown, setSkyShown] = useState(false); // the sky video has drawn a frame (until then: the sky layer)
   const [portalGone, setPortalGone] = useState(false); // the portal's fades are done: stop painting it
   const [reduce] = useState(() => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
 
   const stageRef = useRef(null);
   const loopRef = useRef(null);
+  const loopStillRef = useRef(null);
   const benRef = useRef(null);
   const transitionRef = useRef(null);
   const recoveredRef = useRef(null);
@@ -205,7 +208,11 @@ export const JahWorld = ({ isMobile }) => {
     const t = setTimeout(() => setWarm(true), WARM_FALLBACK_MS);
     return () => clearTimeout(t);
   }, [warm]);
-  const onLoopPlaying = (e) => afterFirstFrame(e.currentTarget, () => setTimeout(() => setWarm(true), WARM_DELAY_MS));
+  const onLoopPlaying = (e) =>
+    afterFirstFrame(e.currentTarget, () => {
+      setLoopShown(true);
+      setTimeout(() => setWarm(true), WARM_DELAY_MS);
+    });
 
   useEffect(() => {
     if (!warm) return;
@@ -304,12 +311,25 @@ export const JahWorld = ({ isMobile }) => {
     setPhase("world");
   };
 
-  const playTransition = (v) =>
-    v.play().catch(() => {
-      if (!v.src.startsWith("blob:")) return enterWorld();
+  // A browser only lets a video start from a real tap/click/key. A wheel turn
+  // isn't one, so where autoplay is off (Safari's setting, Low Power Mode) the
+  // play is refused: then stay on the portal (a click plays it) instead of
+  // skipping straight to the world.
+  const backToPortal = () => {
+    clearTimeout(failsafeRef.current);
+    clearInterval(stallRef.current);
+    enteringRef.current = false;
+    setEntered(false);
+    setPhase("portal");
+  };
+  const playTransition = (v, soft) => {
+    const fail = soft ? backToPortal : enterWorld;
+    return v.play().catch(() => {
+      if (!v.src.startsWith("blob:")) return fail();
       v.src = S.transition.src;
-      v.play().catch(enterWorld);
+      v.play().catch(fail);
     });
+  };
 
   // every 250ms: resume if iOS paused it; if its clock is stuck, kick once, then move on
   const watchStall = (first) => {
@@ -434,7 +454,7 @@ export const JahWorld = ({ isMobile }) => {
     return () => clearTimeout(t);
   }, [phase, fading]);
 
-  const enter = () => {
+  const enter = (soft = false) => {
     if (enteringRef.current || phaseRef.current !== "portal") return;
     enteringRef.current = true;
     setWarm(true);
@@ -444,7 +464,7 @@ export const JahWorld = ({ isMobile }) => {
     // tapped before the download landed (or autoplay was refused, so it never started): stream it, inside the tap
     if (!v.getAttribute("src")) v.src = S.transition.src;
     setPhase("transition");
-    playTransition(v);
+    playTransition(v, soft);
     watchStall(v);
     failsafeRef.current = setTimeout(enterWorld, TRANSITION_FAILSAFE_MS);
   };
@@ -455,7 +475,8 @@ export const JahWorld = ({ isMobile }) => {
     const inHeader = (e) => e.target?.closest?.("header");
     let y0 = null;
     let moved = false;
-    const onWheel = (e) => e.deltaY > 4 && enter();
+    let swiped = false;
+    const onWheel = (e) => e.deltaY > 4 && enter(true);
     const onTS = (e) => {
       if (inHeader(e)) return;
       y0 = e.touches[0].clientY;
@@ -464,10 +485,12 @@ export const JahWorld = ({ isMobile }) => {
     const onTM = (e) => {
       if (y0 == null) return;
       if (Math.abs(e.touches[0].clientY - y0) > 10) moved = true;
-      if (y0 - e.touches[0].clientY > 24) enter();
+      if (y0 - e.touches[0].clientY > 24) swiped = true;
     };
     const onTE = (e) => {
-      if (y0 != null && !moved && !inHeader(e)) enter();
+      // a tap, or a swipe up: started on the lift, which browsers count as a tap
+      if (y0 != null && (!moved || swiped) && !inHeader(e)) enter();
+      swiped = false;
       y0 = null;
     };
     const onClick = (e) => {
@@ -606,6 +629,7 @@ export const JahWorld = ({ isMobile }) => {
           benRef.current.style.transform = `translate3d(${(px * D).toFixed(1)}px, ${((1 - py) * 6 * reduceM).toFixed(1)}px, 0) scale(${(1 + 0.045 * py * reduceM).toFixed(4)})`;
         if (loopRef.current)
           loopRef.current.style.transform = `translate3d(${(-px * D * 0.4).toFixed(1)}px, ${(-py * 2 * reduceM).toFixed(1)}px, 0) scale(${(1 + 0.012 * py * reduceM).toFixed(4)})`;
+        if (loopStillRef.current && loopRef.current) loopStillRef.current.style.transform = loopRef.current.style.transform;
       }
 
       // ---- the world ----
@@ -774,6 +798,8 @@ export const JahWorld = ({ isMobile }) => {
                     <video
                       ref={skyVideoRef}
                       className="h-full w-full object-fill"
+                      style={{ opacity: skyShown ? 1 : 0 }}
+                      onPlaying={(ev) => afterFirstFrame(ev.currentTarget, () => setSkyShown(true))}
                       src={loadWorld ? S.sky.src : undefined}
                       poster={loadWorld ? S.sky.poster : undefined}
                       muted
@@ -796,9 +822,14 @@ export const JahWorld = ({ isMobile }) => {
         {/* ---------- portal: the mist loop ---------- */}
         <div className="absolute inset-0" style={{ visibility: portalVisible ? "visible" : "hidden" }}>
           <div ref={(el) => (rectRefs.current.loop = el)} className={`${abs} overflow-visible`}>
+            {/* the still sits underneath; the video stays invisible until it really plays, so
+                when a browser refuses autoplay (Safari, Low Power Mode) you see the still,
+                never the browser's own play button */}
+            <img ref={loopStillRef} src={S.portal.poster} alt="" aria-hidden draggable={false} className="absolute inset-0 h-full w-full select-none object-fill will-change-transform" />
             <video
               ref={loopRef}
-              className="h-full w-full object-fill will-change-transform"
+              className="relative h-full w-full object-fill will-change-transform"
+              style={{ opacity: loopShown ? 1 : 0 }}
               src={S.portal.loop}
               poster={S.portal.poster}
               muted
@@ -819,8 +850,10 @@ export const JahWorld = ({ isMobile }) => {
           className={abs}
           style={{
             opacity: transitionShown && !fading ? 1 : 0,
-            filter: inWorld ? "blur(6px) brightness(0.5)" : "none",
-            transition: fading ? "opacity 0.9s ease, filter 1.2s ease" : inWorld ? "opacity 0.45s ease, filter 1.2s ease" : "opacity 0.45s ease",
+            // blurs and darkens as the landing starts (1.3s before the end), not after:
+            // the clip's very last frame is badly compressed, so it's never seen sharp
+            filter: inWorld || landingEarly ? "blur(6px) brightness(0.5)" : "none",
+            transition: fading ? "opacity 0.9s ease, filter 1.2s ease" : inWorld || landingEarly ? "opacity 0.45s ease, filter 1.2s ease" : "opacity 0.45s ease",
             visibility: entered && !(holdGone && inWorld) ? "visible" : "hidden",
           }}
         >

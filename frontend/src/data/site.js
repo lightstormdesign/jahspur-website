@@ -247,7 +247,7 @@ export const TRACKING_PIXEL_IDS = {
 // through -> the layered world, which scroll then drives (Burnell's pattern;
 // see docs in JahWorld.jsx). All media is under public/world. Bump MEDIA_V
 // whenever any of those files is re-encoded, or phones keep the old copy.
-export const MEDIA_V = 1;
+export const MEDIA_V = 2;
 const v = (p) => `${p}?v=${MEDIA_V}`;
 
 // Rects are [x, y, w, h] in the world canvas's pixels: where each video's
