@@ -52,6 +52,9 @@ const PAUSE_S = 4; // ... then a pause, then mirrored
 // Burnell's world numbers (WorldHome.jsx / DesktopWorld.jsx)
 const DESCENT = { phone: 100, desktop: 90 }; // svh / vh of scroll for the descent: about a screen, then the story
 const CHAPTER = 100; // per story chapter
+// where the first chapter is centred (svh / vh): it starts fading in half a chapter earlier,
+// while the descent is still playing underneath it
+const STORY_AT = { phone: 125, desktop: 120 };
 const STORY_ZOOM = { phone: 0.5, desktop: 0.35 }; // how much the nearest layer grows over the story
 const STORY_DIM = { phone: 0.55, desktop: 0.62 };
 const TEXT_POOL = "radial-gradient(ellipse at center, rgba(0,0,0,0.62) 0%, rgba(0,0,0,0.38) 48%, transparent 75%)";
@@ -568,12 +571,13 @@ export const JahWorld = ({ isMobile }) => {
       if (Math.abs(target - ys) < 0.3) ys = target;
       const a = anchorRefs.current;
       const Dpx = a[1] ? a[1].offsetTop : H * 2;
-      const Cpx = a[2] ? a[2].offsetTop - Dpx : H;
+      const Cpx = a[3] && a[2] ? a[3].offsetTop - a[2].offsetTop : H;
+      const Q0 = a[2] ? a[2].offsetTop - Cpx : Dpx; // q = 0 here, chapter 1 centred at q = 1
       const inW = ph === "world";
       const p = inW ? clamp01(ys / Dpx) : 0; // descent
       const e = smooth(p);
-      const q = inW ? (ys - Dpx) / Cpx : -1; // story: chapter i is centred at q = i + 1
-      const z = clamp01((ys - Dpx) / (Cpx * CHAPTERS.length)); // story zoom
+      const q = inW ? (ys - Q0) / Cpx : -1; // story: chapter i is centred at q = i + 1
+      const z = clamp01((ys - Q0) / (Cpx * CHAPTERS.length)); // story zoom
       tx += (ix - tx) * 0.1;
       ty += (iy - ty) * 0.1;
       const ramp = inW ? smooth(clamp01((now - worldAtRef.current) / 1000 / PAR_RAMP_S)) : 0;
@@ -649,7 +653,7 @@ export const JahWorld = ({ isMobile }) => {
         // landing: blurred + dimmed under the copy, lifting as the descent begins
         const veil = inW ? 1 - smooth(clamp01(p / 0.3)) : 1;
         if (blurRef.current) blurRef.current.style.filter = veil > 0.02 ? `blur(${(6 * veil).toFixed(1)}px)` : "none";
-        const storyDim = dimMax * smooth(clamp01(q / 0.6));
+        const storyDim = dimMax * smooth(clamp01((q - 0.2) / 0.4)); // full as chapter 1 arrives
         if (shadeRef.current) shadeRef.current.style.opacity = Math.max(0.5 * veil, storyDim).toFixed(3);
         // chapters fade in and out by scroll position, drifting a touch as they go
         chapterRefs.current.forEach((el, i) => {
@@ -678,13 +682,14 @@ export const JahWorld = ({ isMobile }) => {
   const abs = "absolute left-0 top-0";
   const unit = isMobile ? "svh" : "vh";
   const D = DESCENT[isMobile ? "phone" : "desktop"];
+  const S1 = STORY_AT[isMobile ? "phone" : "desktop"];
   const snap = { position: "absolute", left: 0, height: 1, width: 1 };
 
   return (
     <div data-testid="jah-world" data-nav-clear className="relative">
       {/* scroll track: the descent, one stop per chapter (proximity snap), and a last screen */}
-      <div className="relative" style={{ height: inWorld ? `${D + CHAPTER * CHAPTERS.length + 100}${unit}` : "100svh" }} aria-hidden>
-        {[0, D, ...CHAPTERS.map((_, i) => D + CHAPTER * (i + 1))].map((top, i) => (
+      <div className="relative" style={{ height: inWorld ? `${S1 + CHAPTER * (CHAPTERS.length - 1) + 100}${unit}` : "100svh" }} aria-hidden>
+        {[0, D, ...CHAPTERS.map((_, i) => S1 + CHAPTER * i)].map((top, i) => (
           <div key={i} ref={(el) => (anchorRefs.current[i] = el)} style={{ ...snap, top: `${top}${unit}`, scrollSnapAlign: i >= 2 ? "start" : "none" }} />
         ))}
       </div>
