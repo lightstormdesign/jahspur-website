@@ -177,6 +177,7 @@ export const JahWorld = ({ isMobile }) => {
   const loopRef = useRef(null);
   const loopStillRef = useRef(null);
   const canvasRef = useRef(null); // desktop: the growing layers are drawn here (see the engine)
+  const groupRef = useRef(null); // the portal loop + transition (fitted to the visible height, like the world)
   const redrawRef = useRef(false); // a layer image arrived: draw again even if nothing moved
   const benRef = useRef(null);
   const transitionRef = useRef(null);
@@ -267,9 +268,12 @@ export const JahWorld = ({ isMobile }) => {
   useEffect(() => {
     if (phase !== "world" || !layersReady) return;
     skyVideoRef.current?.play().catch(() => {});
-    setFading(true);
-    const t = setTimeout(() => setHoldGone(true), 950);
-    return () => clearTimeout(t);
+    const t1 = setTimeout(() => setFading(true), 0);
+    const t2 = setTimeout(() => setHoldGone(true), 950);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
   }, [phase, layersReady]);
 
   // The mist loop is started from code, never with the autoPlay attribute: Safari draws its own
@@ -545,6 +549,10 @@ export const JahWorld = ({ isMobile }) => {
     let lastSize = "";
     let lastKey = "";
     let lastLanding = "";
+    let fitTarget = null; // [scale, tx, ty]: the H layout fitted to the visible height
+    let fitNow = null;
+    let lastFit = "";
+    let worldScrolled = false;
     const onMove = (e) => {
       if (e.pointerType !== "mouse") return;
       mouse = true;
@@ -576,20 +584,27 @@ export const JahWorld = ({ isMobile }) => {
       }
       const W = stage.clientWidth;
       const H = stage.clientHeight;
-      // The stage is 100lvh (the height once the browser bars hide) so the world
-      // never shows a gap while scrolling. Before the world there's no scrolling,
-      // so the bars never hide (Chrome on iPhone keeps both): fit the portal and
-      // the transition to the height actually visible, or Ben is drawn for a
-      // taller screen than you see, too big and partly under the bottom bar.
-      const HF = phaseRef.current !== "world" ? Math.min(H, window.innerHeight || H) : H;
-      const k = OVERSCAN * Math.max(W / RW, HF / RH);
+      // The stage is 100lvh (the height once the browser bars hide), so nothing ever shows a
+      // gap, and everything is laid out for it (k, ox, oy). While the bars are showing (Chrome
+      // on iPhone keeps both until you scroll), the picture is fitted to the height actually
+      // visible (HF) instead: one compositor transform, the same on the portal/transition group
+      // and on the world, so the hand-over between them can't jump. It eases only when the
+      // visible height really changes (the bars hiding as you scroll). Ben, who fades out on
+      // the tap, is placed for HF directly.
+      const HF = Math.min(H, window.innerHeight || H);
+      const k = OVERSCAN * Math.max(W / RW, H / RH);
       const ox = (W - RW * k) / 2 - RX * k;
-      const oy = (HF - RH * k) / 2 - RY * k;
+      const oy = (H - RH * k) / 2 - RY * k;
+      const kF = OVERSCAN * Math.max(W / RW, HF / RH);
+      const oxF = (W - RW * kF) / 2 - RX * kF;
+      const oyF = (HF - RH * kF) / 2 - RY * kF;
       const size = `${W}|${H}|${HF}`;
       if (size !== lastSize) {
         lastSize = size;
         placeRect(rectRefs.current.loop, S.portal.rect, k, ox, oy);
-        placeRect(rectRefs.current.ben, S.portal.rect, k, ox, oy);
+        placeRect(rectRefs.current.ben, S.portal.rect, kF, oxF, oyF);
+        fitTarget = [kF / k, oxF - (kF / k) * ox, oyF - (kF / k) * oy];
+        if (!fitNow) fitNow = fitTarget.slice(); // first layout: no easing in
         // A phone is narrower than the portal art, so the cover fit crops its
         // sides and zooms everything in. Ben is his own cutout over the plate
         // (the transition plays on the empty plate), so he alone is scaled back
@@ -599,8 +614,8 @@ export const JahWorld = ({ isMobile }) => {
         if (bw && isMobile) {
           // ...but never so small that the cutout's right edge (where the mic
           // stand and guitar neck run off the photo) comes into view
-          const edge = (W + 16) / (ox + RW * k); // + his sideways drift (up to 14px)
-          const fit = Math.min(1, Math.max(W / k / RW, edge));
+          const edge = (W + 16) / (oxF + RW * kF); // + his sideways drift (up to 14px)
+          const fit = Math.min(1, Math.max(W / kF / RW, edge));
           const left = parseFloat(bw.style.left);
           const top = parseFloat(bw.style.top);
           bw.style.transformOrigin = `${(-left).toFixed(1)}px ${(HF - top).toFixed(1)}px`;
@@ -624,6 +639,28 @@ export const JahWorld = ({ isMobile }) => {
         lastKey = "";
       }
 
+      // once you scroll in the world, settle onto the full-height fit (identity) while the
+      // descent is already moving, so it covers the bars' space before they hide (no black
+      // strip as the bottom bar slides away); one-way, it stays there
+      if (phaseRef.current === "world" && window.scrollY > 4) worldScrolled = true;
+      const tgt = worldScrolled ? [1, 0, 0] : fitTarget;
+      if (fitNow && tgt) {
+        const a = 1 - Math.exp(-dt * 6);
+        let moving = false;
+        for (let j = 0; j < 3; j++) {
+          const d = tgt[j] - fitNow[j];
+          if (Math.abs(d) > (j ? 0.05 : 0.00005)) {
+            fitNow[j] += d * a;
+            moving = true;
+          } else fitNow[j] = tgt[j];
+        }
+        const ft = Math.abs(fitNow[0] - 1) < 0.0005 && Math.abs(fitNow[1]) < 0.05 && Math.abs(fitNow[2]) < 0.05 ? "none" : `translate(${fitNow[1].toFixed(2)}px, ${fitNow[2].toFixed(2)}px) scale(${fitNow[0].toFixed(5)})`;
+        if (ft !== lastFit || moving) {
+          lastFit = ft;
+          if (groupRef.current) groupRef.current.style.transform = ft;
+          if (blurRef.current) blurRef.current.style.transform = ft;
+        }
+      }
       const reduceM = reduce ? 0 : 1;
       const ph = phaseRef.current;
       const ix = tilt.live ? tilt.x : mouse ? mx : 0;
@@ -822,7 +859,7 @@ export const JahWorld = ({ isMobile }) => {
       <div ref={stageRef} className="fixed inset-x-0 top-0 z-10 overflow-hidden bg-black" style={{ height: "100lvh" }}>
         {/* ---------- world (underneath; not painted until it's needed) ---------- */}
         <div className="absolute inset-0" style={{ visibility: inWorld ? "visible" : "hidden" }}>
-          <div ref={blurRef} className="absolute inset-0" style={{ filter: "blur(6px)" }}>
+          <div ref={blurRef} className="absolute inset-0" style={{ filter: "blur(6px)", transformOrigin: "0 0" }}>
             {S.layers.map((L, i) => (
               <div key={L.key} className="contents">
                 <img
@@ -865,61 +902,65 @@ export const JahWorld = ({ isMobile }) => {
           <div ref={shadeRef} aria-hidden className="pointer-events-none absolute inset-0 bg-black" style={{ opacity: 0.5 }} />
         </div>
 
-        {/* ---------- portal: the mist loop ---------- */}
-        <div className="absolute inset-0" style={{ visibility: portalVisible ? "visible" : "hidden" }}>
-          <div ref={(el) => (rectRefs.current.loop = el)} className={`${abs} overflow-visible`}>
-            {/* the still sits underneath; the video stays invisible until it really plays, so
-                when a browser refuses autoplay (Safari, Low Power Mode) you see the still,
-                never the browser's own play button */}
-            <img ref={loopStillRef} src={S.portal.poster} alt="" aria-hidden draggable={false} className="absolute inset-0 h-full w-full select-none object-fill will-change-transform" />
+        {/* the portal loop + transition: fitted to the visible height exactly like the world
+            (the engine sets the same transform on both) */}
+        <div ref={groupRef} className="absolute inset-0" style={{ transformOrigin: "0 0" }}>
+          {/* ---------- portal: the mist loop ---------- */}
+          <div className="absolute inset-0" style={{ visibility: portalVisible ? "visible" : "hidden" }}>
+            <div ref={(el) => (rectRefs.current.loop = el)} className={`${abs} overflow-visible`}>
+              {/* the still sits underneath; the video stays invisible until it really plays, so
+                  when a browser refuses autoplay (Safari, Low Power Mode) you see the still,
+                  never the browser's own play button */}
+              <img ref={loopStillRef} src={S.portal.poster} alt="" aria-hidden draggable={false} className="absolute inset-0 h-full w-full select-none object-fill will-change-transform" />
+              <video
+                ref={loopRef}
+                className="relative h-full w-full object-fill will-change-transform"
+                style={{ opacity: loopShown ? 1 : 0 }}
+                src={S.portal.loop}
+                poster={S.portal.poster}
+                muted
+                loop
+                playsInline
+                preload="auto"
+                aria-hidden
+                tabIndex={-1}
+                onPlaying={onLoopPlaying}
+              />
+            </div>
+          </div>
+
+          {/* ---------- transition: holds its last frame, blurred and dimmed like the landing, until the layers are in ---------- */}
+          <div
+            ref={(el) => (rectRefs.current.transition = el)}
+            className={abs}
+            style={{
+              opacity: transitionShown && !fading ? 1 : 0,
+              // blurs and darkens as the landing starts (1.3s before the end), not after:
+              // the clip's very last frame is badly compressed, so it's never seen sharp
+              filter: inWorld || landingEarly ? "blur(6px) brightness(0.5)" : "none",
+              transition: fading ? "opacity 0.9s ease, filter 1.2s ease" : inWorld || landingEarly ? "opacity 0.45s ease, filter 1.2s ease" : "opacity 0.45s ease",
+              visibility: entered && !(holdGone && inWorld) ? "visible" : "hidden",
+            }}
+          >
             <video
-              ref={loopRef}
-              className="relative h-full w-full object-fill will-change-transform"
-              style={{ opacity: loopShown ? 1 : 0 }}
-              src={S.portal.loop}
-              poster={S.portal.poster}
+              ref={transitionRef}
+              className="h-full w-full object-fill"
+              poster={S.transition.poster}
               muted
-              loop
               playsInline
-              preload="auto"
+              preload="none"
               aria-hidden
               tabIndex={-1}
-              onPlaying={onLoopPlaying}
+              onPlaying={(ev) => afterFirstFrame(ev.currentTarget, () => setTransitionShown(true))}
+              onTimeUpdate={(ev) => {
+                const v = ev.currentTarget;
+                if (!landingEarly && v.duration && v.duration - v.currentTime <= LANDING_EARLY_S) setLandingEarly(true);
+              }}
+              onEnded={enterWorld}
             />
           </div>
+          {phase === "transition" && <div aria-hidden className="pointer-events-none absolute inset-0" style={{ background: "rgba(0,0,0,0.012)" }} />}
         </div>
-
-        {/* ---------- transition: holds its last frame, blurred and dimmed like the landing, until the layers are in ---------- */}
-        <div
-          ref={(el) => (rectRefs.current.transition = el)}
-          className={abs}
-          style={{
-            opacity: transitionShown && !fading ? 1 : 0,
-            // blurs and darkens as the landing starts (1.3s before the end), not after:
-            // the clip's very last frame is badly compressed, so it's never seen sharp
-            filter: inWorld || landingEarly ? "blur(6px) brightness(0.5)" : "none",
-            transition: fading ? "opacity 0.9s ease, filter 1.2s ease" : inWorld || landingEarly ? "opacity 0.45s ease, filter 1.2s ease" : "opacity 0.45s ease",
-            visibility: entered && !(holdGone && inWorld) ? "visible" : "hidden",
-          }}
-        >
-          <video
-            ref={transitionRef}
-            className="h-full w-full object-fill"
-            poster={S.transition.poster}
-            muted
-            playsInline
-            preload="none"
-            aria-hidden
-            tabIndex={-1}
-            onPlaying={(ev) => afterFirstFrame(ev.currentTarget, () => setTransitionShown(true))}
-            onTimeUpdate={(ev) => {
-              const v = ev.currentTarget;
-              if (!landingEarly && v.duration && v.duration - v.currentTime <= LANDING_EARLY_S) setLandingEarly(true);
-            }}
-            onEnded={enterWorld}
-          />
-        </div>
-        {phase === "transition" && <div aria-hidden className="pointer-events-none absolute inset-0" style={{ background: "rgba(0,0,0,0.012)" }} />}
 
         {/* ---------- Ben, the portal's shading and copy ----------
             On tap each lets go at its own pace: the words go first, Ben
