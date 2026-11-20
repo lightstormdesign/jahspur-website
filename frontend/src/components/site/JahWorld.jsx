@@ -176,6 +176,8 @@ export const JahWorld = ({ isMobile }) => {
   const stageRef = useRef(null);
   const loopRef = useRef(null);
   const loopStillRef = useRef(null);
+  const canvasRef = useRef(null); // desktop: the growing layers are drawn here (see the engine)
+  const redrawRef = useRef(false); // a layer image arrived: draw again even if nothing moved
   const benRef = useRef(null);
   const transitionRef = useRef(null);
   const recoveredRef = useRef(null);
@@ -248,7 +250,10 @@ export const JahWorld = ({ isMobile }) => {
   );
 
   const total = S.layers.length + 1; // + the sky video's poster
-  const onLayerLoad = () => {
+  const onLayerLoad = (e) => {
+    const im = e && e.currentTarget;
+    if (im && im.decode) im.decode().catch(() => {}).then(() => (redrawRef.current = true));
+    else redrawRef.current = true;
     layersLoaded.current += 1;
     if (layersLoaded.current >= total) setLayersReady(true);
   };
@@ -266,6 +271,14 @@ export const JahWorld = ({ isMobile }) => {
     const t = setTimeout(() => setHoldGone(true), 950);
     return () => clearTimeout(t);
   }, [phase, layersReady]);
+
+  // The mist loop is started from code, never with the autoPlay attribute: Safari draws its own
+  // play button on a video whose autoplay it refused (its setting, Low Power Mode). Refused
+  // here, the loop just stays hidden and its still shows (Burnell's portal does the same).
+  useEffect(() => {
+    const v = loopRef.current;
+    if (v) v.play().catch(() => {});
+  }, []);
 
   // the portal hands over slowly (shading lifts over ~3s), then stops painting
   useEffect(() => {
@@ -595,6 +608,12 @@ export const JahWorld = ({ isMobile }) => {
         }
         placeRect(rectRefs.current.transition, S.transition.rect, k, ox, oy);
         layerRefs.current.forEach((el) => el && (el.style.width = `${(CW * k).toFixed(1)}px`));
+        const cv = canvasRef.current;
+        if (cv) {
+          const dpr = Math.min(window.devicePixelRatio || 1, 2);
+          cv.width = Math.round(W * dpr);
+          cv.height = Math.round(H * dpr);
+        }
         const sk = rectRefs.current.sky;
         if (sk) {
           sk.style.width = `${(S.sky.rect[2] * k).toFixed(1)}px`;
@@ -662,8 +681,20 @@ export const JahWorld = ({ isMobile }) => {
         }
       }
 
+      if (redrawRef.current) {
+        redrawRef.current = false;
+        lastKey = "";
+      }
       if (key !== lastKey) {
         lastKey = key;
+        // Desktop draws the growing layers (all but the sky) onto one canvas, straight from the
+        // source images at their size this frame. As DOM layers, Chrome re-rastered all of them
+        // at every new scale while scrolling (measured: ~11,500 raster tasks, 4.5s of raster in
+        // 3s of scroll), which tore and stuttered; Safari instead stretched its first raster,
+        // which looked soft. The sky never changes size, so it stays a DOM image and video.
+        const cv = canvasRef.current;
+        const ctx = cv ? cv.getContext("2d") : null;
+        const draws = [];
         // the front leaves: grow first (anchored on the bottom edge of the view, so they swell up into
         // the frame instead of sliding out of it), and only spread apart late in the descent
         const grow = smooth(clamp01(p / 0.65));
@@ -698,7 +729,8 @@ export const JahWorld = ({ isMobile }) => {
             const t1y = Ay * (1 - g1) + dy;
             const x = Z[0] + (t1x - Z[0]) * g2 + tx * par * L.depth * TILT_X;
             const y = Z[1] + (t1y - Z[1]) * g2 + ty * par * L.depth * TILT_Y;
-            node.style.transform = `translate3d(${(ox + x * k).toFixed(1)}px, ${(oy + y * k).toFixed(1)}px, 0) scale(${g.toFixed(4)})`;
+            if (ctx && L.key !== "sky") draws.push([node, ox + x * k, oy + y * k, g]);
+            else node.style.transform = `translate3d(${(ox + x * k).toFixed(1)}px, ${(oy + y * k).toFixed(1)}px, 0) scale(${g.toFixed(4)})`;
             return [x, y];
           };
           let gx;
@@ -708,9 +740,14 @@ export const JahWorld = ({ isMobile }) => {
             // against its own screen edge and grows in from it, so they're never pushed off
             const xl = -ox / k;
             const xr = (W - ox) / k;
-            place(el, 0, [xl - EDGE_SPARE, VB], xl - EDGE_SPARE);
-            const right = layerRefs.current[S.layers.length];
-            if (right) place(right, CW, [xr + EDGE_SPARE, VB], xr + EDGE_SPARE - CW);
+            if (ctx) {
+              place({ half: "left", el }, 0, [xl - EDGE_SPARE, VB], xl - EDGE_SPARE);
+              place({ half: "right", el }, CW, [xr + EDGE_SPARE, VB], xr + EDGE_SPARE - CW);
+            } else {
+              place(el, 0, [xl - EDGE_SPARE, VB], xl - EDGE_SPARE);
+              const right = layerRefs.current[S.layers.length];
+              if (right) place(right, CW, [xr + EDGE_SPARE, VB], xr + EDGE_SPARE - CW);
+            }
           } else {
             [gx, gy] = place(el, CW / 2, L.part ? [CW / 2, VB] : ZC);
           }
@@ -719,6 +756,23 @@ export const JahWorld = ({ isMobile }) => {
             rectRefs.current.sky.style.transform = `translate3d(${(ox + (gx + r[0] * g) * k).toFixed(1)}px, ${(oy + (gy + r[1] * g) * k).toFixed(1)}px, 0) scale(${g.toFixed(4)})`;
           }
         });
+        if (ctx) {
+          const dpr = cv.width / W;
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          ctx.clearRect(0, 0, W, H);
+          ctx.imageSmoothingEnabled = true;
+          ctx.imageSmoothingQuality = "high";
+          draws.forEach(([node, x, y, g]) => {
+            const im = node.half ? node.el : node;
+            if (!im.complete || !im.naturalWidth) return;
+            const s = (k * g * CW) / im.naturalWidth; // canvas units -> screen px, at this frame's size
+            const nw = im.naturalWidth;
+            const nh = im.naturalHeight;
+            if (node.half === "left") ctx.drawImage(im, 0, 0, nw / 2, nh, x, y, (nw / 2) * s, nh * s);
+            else if (node.half === "right") ctx.drawImage(im, nw / 2, 0, nw / 2, nh, x + (nw / 2) * s, y, (nw / 2) * s, nh * s);
+            else ctx.drawImage(im, x, y, nw * s, nh * s);
+          });
+        }
         // landing: blurred + dimmed under the copy, lifting as the descent begins
         const veil = inW ? 1 - smooth(clamp01(p / 0.3)) : 1;
         if (blurRef.current) blurRef.current.style.filter = veil > 0.02 ? `blur(${(6 * veil).toFixed(1)}px)` : "none";
@@ -779,20 +833,9 @@ export const JahWorld = ({ isMobile }) => {
                   onLoad={onLayerLoad}
                   onError={onLayerLoad}
                   className={`${abs} max-w-none select-none`}
-                  style={{ transformOrigin: "0 0", height: "auto", willChange: "transform", clipPath: L.part && !isMobile ? "inset(0 50% 0 0)" : undefined }}
+                  // desktop: every layer but the sky is only a source for the canvas below
+                  style={!isMobile && L.key !== "sky" ? { display: "none" } : { transformOrigin: "0 0", height: "auto", willChange: "transform" }}
                 />
-                {L.part && !isMobile && (
-                  <img
-                    ref={(el) => (layerRefs.current[S.layers.length] = el)}
-                    src={loadWorld ? L.src : undefined}
-                    alt=""
-                    aria-hidden
-                    draggable={false}
-                    decoding="async"
-                    className={`${abs} max-w-none select-none`}
-                    style={{ transformOrigin: "0 0", height: "auto", willChange: "transform", clipPath: "inset(0 0 0 50%)" }}
-                  />
-                )}
                 {L.key === "sky" && (
                   <div ref={(el) => (rectRefs.current.sky = el)} className={abs} style={{ transformOrigin: "0 0", willChange: "transform" }}>
                     <video
@@ -815,6 +858,7 @@ export const JahWorld = ({ isMobile }) => {
                 )}
               </div>
             ))}
+            {!isMobile && <canvas ref={canvasRef} aria-hidden className="pointer-events-none absolute inset-0 h-full w-full" />}
           </div>
           <div ref={shadeRef} aria-hidden className="pointer-events-none absolute inset-0 bg-black" style={{ opacity: 0.5 }} />
         </div>
@@ -835,7 +879,6 @@ export const JahWorld = ({ isMobile }) => {
               muted
               loop
               playsInline
-              autoPlay
               preload="auto"
               aria-hidden
               tabIndex={-1}
