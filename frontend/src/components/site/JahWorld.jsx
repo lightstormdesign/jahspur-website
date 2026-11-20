@@ -520,10 +520,16 @@ export const JahWorld = ({ isMobile }) => {
       }
       const W = stage.clientWidth;
       const H = stage.clientHeight;
-      const k = OVERSCAN * Math.max(W / RW, H / RH);
+      // The stage is 100lvh (the height once the browser bars hide) so the world
+      // never shows a gap while scrolling. Before the world there's no scrolling,
+      // so the bars never hide (Chrome on iPhone keeps both): fit the portal and
+      // the transition to the height actually visible, or Ben is drawn for a
+      // taller screen than you see, too big and partly under the bottom bar.
+      const HF = phaseRef.current !== "world" ? Math.min(H, window.innerHeight || H) : H;
+      const k = OVERSCAN * Math.max(W / RW, HF / RH);
       const ox = (W - RW * k) / 2 - RX * k;
-      const oy = (H - RH * k) / 2 - RY * k;
-      const size = `${W}|${H}`;
+      const oy = (HF - RH * k) / 2 - RY * k;
+      const size = `${W}|${H}|${HF}`;
       if (size !== lastSize) {
         lastSize = size;
         placeRect(rectRefs.current.loop, S.portal.rect, k, ox, oy);
@@ -541,7 +547,7 @@ export const JahWorld = ({ isMobile }) => {
           const fit = Math.min(1, Math.max(W / k / RW, edge));
           const left = parseFloat(bw.style.left);
           const top = parseFloat(bw.style.top);
-          bw.style.transformOrigin = `${(-left).toFixed(1)}px ${(H - top).toFixed(1)}px`;
+          bw.style.transformOrigin = `${(-left).toFixed(1)}px ${(HF - top).toFixed(1)}px`;
           bw.style.transform = fit < 0.999 ? `scale(${fit.toFixed(4)})` : "";
         }
         placeRect(rectRefs.current.transition, S.transition.rect, k, ox, oy);
