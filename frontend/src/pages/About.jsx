@@ -121,7 +121,7 @@ const STAGES = [
   },
   {
     id: "roots",
-    title: "Roots & Culture",
+    title: "Roots",
     media: "/jahspur-about-02.jpg",
     alt: "Jah Spur at a gate painted with the words Unity and One Love",
     body: [
@@ -154,7 +154,7 @@ const STAGES = [
     alt: "Jah Spur on stage with acoustic guitar and his band",
     body: [
       "Today I lead my own band, The Strongbacks, out of Taos, New Mexico, and record in a studio of my own. Those are the two things I'm proudest of.",
-      "I have devoted more than half of my life to bringing roots and culture music to the people: spreading love and unity through word and sound.",
+      "I have devoted more than half of my life to bringing roots music to the people: spreading love and unity through word and sound.",
     ],
     showChevron: true,
   },

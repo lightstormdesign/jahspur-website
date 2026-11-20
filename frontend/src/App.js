@@ -20,11 +20,30 @@ function ScrollToTop() {
   return null;
 }
 
+// each page gets its own browser-tab title
+const TITLES = {
+  "/about": "About",
+  "/album": "Written in Stone",
+  "/shows": "Shows",
+  "/community": "Community",
+  "/epk": "EPK",
+  "/contact": "Contact",
+};
+function PageTitle() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    const t = TITLES[pathname.replace(/\/+$/, "")];
+    document.title = t ? `${t} · Jah Spur` : "Jah Spur · Roots Music from Taos, New Mexico";
+  }, [pathname]);
+  return null;
+}
+
 function App() {
   return (
     <div className="App">
       <BrowserRouter>
         <ScrollToTop />
+        <PageTitle />
         <TrackingPixel />
         <GlyphField />
         <GlowCursor />

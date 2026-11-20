@@ -116,7 +116,7 @@ export default function EPK() {
           <span className="overline">Electronic Press Kit</span>
           <h1 className="font-display text-stone mt-5 text-5xl uppercase tracking-[0.12em] sm:text-7xl">{ARTIST_NAME}</h1>
           <p className="font-accent mt-4 text-lg italic text-white/65">
-            Roots &amp; culture music · {SITE_LOCATION}
+            Roots music · {SITE_LOCATION}
             <br />
             Solo, or with his band, {BAND_NAME}.
           </p>
