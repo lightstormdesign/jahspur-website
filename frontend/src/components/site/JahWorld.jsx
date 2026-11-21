@@ -169,7 +169,9 @@ export const JahWorld = ({ isMobile }) => {
   const [holdGone, setHoldGone] = useState(false); // ... and gone (visibility: hidden)
   const [landingEarly, setLandingEarly] = useState(false);
   const [loopShown, setLoopShown] = useState(false); // the mist loop has drawn a frame (until then: its still)
-  const [skyShown, setSkyShown] = useState(false); // the sky video has drawn a frame (until then: the sky layer)
+  const [skyShown, setSkyShown] = useState(false); // the sky loop has drawn a frame (until then: the sky layer)
+  const [birdShown, setBirdShown] = useState(false); // the birds clip has drawn a frame
+  const [birdsDone, setBirdsDone] = useState(false); // ...and handed over to the loop
   const [portalGone, setPortalGone] = useState(false);
   const [benShown, setBenShown] = useState(false); // his portrait has loaded and decoded: fade it in // the portal's fades are done: stop painting it
   const [reduce] = useState(() => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
@@ -184,6 +186,7 @@ export const JahWorld = ({ isMobile }) => {
   const transitionRef = useRef(null);
   const recoveredRef = useRef(null);
   const skyVideoRef = useRef(null);
+  const birdVideoRef = useRef(null); // the landing's sky, with birds crossing it (plays once, then the loop)
   const layerRefs = useRef([]);
   const rectRefs = useRef({}); // portal loop / ben / transition / sky video wrappers
   const anchorRefs = useRef([]);
@@ -268,14 +271,19 @@ export const JahWorld = ({ isMobile }) => {
   // once the clip has ended and the layers are in: start the living sky, fade the held last frame out
   useEffect(() => {
     if (phase !== "world" || !layersReady) return;
-    skyVideoRef.current?.play().catch(() => {});
+    // the sky lands with birds crossing it (6s, once); its last frame is the loop's first, so
+    // when it ends the loop takes over seamlessly (see the birds video's onEnded)
+    const bird = birdVideoRef.current;
+    const loopSky = () => skyVideoRef.current?.play().catch(() => {});
+    if (bird && !reduce) bird.play().catch(loopSky);
+    else loopSky();
     const t1 = setTimeout(() => setFading(true), 0);
     const t2 = setTimeout(() => setHoldGone(true), 950);
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
     };
-  }, [phase, layersReady]);
+  }, [phase, layersReady, reduce]);
 
   // The mist loop is started from code, never with the autoPlay attribute: Safari draws its own
   // play button on a video whose autoplay it refused (its setting, Low Power Mode). Refused
@@ -893,13 +901,41 @@ export const JahWorld = ({ isMobile }) => {
                   <div ref={(el) => (rectRefs.current.sky = el)} className={abs} style={{ transformOrigin: "0 0", willChange: "transform" }}>
                     <video
                       ref={skyVideoRef}
-                      className="h-full w-full object-fill"
+                      className="absolute inset-0 h-full w-full object-fill"
                       style={{ opacity: skyShown ? 1 : 0 }}
-                      onPlaying={(ev) => afterFirstFrame(ev.currentTarget, () => setSkyShown(true))}
+                      onPlaying={(ev) =>
+                        afterFirstFrame(ev.currentTarget, () => {
+                          setSkyShown(true);
+                          setBirdsDone(true); // the loop is up: the birds clip can go
+                        })
+                      }
                       src={loadWorld ? S.sky.src : undefined}
                       poster={loadWorld ? S.sky.poster : undefined}
                       muted
                       loop
+                      playsInline
+                      preload={loadWorld ? "auto" : "none"}
+                      aria-hidden
+                      tabIndex={-1}
+                    />
+                    {/* on landing: the same sky with birds flying across it, once (so you see the
+                        world is alive), then the loop above takes over from the same frame */}
+                    <video
+                      ref={birdVideoRef}
+                      className="absolute inset-0 h-full w-full object-fill"
+                      style={{ opacity: birdShown && !birdsDone ? 1 : 0, visibility: birdsDone ? "hidden" : "visible" }}
+                      onPlaying={(ev) => afterFirstFrame(ev.currentTarget, () => setBirdShown(true))}
+                      onEnded={() => {
+                        const v = skyVideoRef.current;
+                        if (!v) return setBirdsDone(true);
+                        try {
+                          v.currentTime = 0;
+                        } catch (e) {}
+                        v.play().catch(() => setBirdsDone(true));
+                      }}
+                      src={loadWorld ? S.sky.birds : undefined}
+                      poster={loadWorld ? S.sky.poster : undefined}
+                      muted
                       playsInline
                       preload={loadWorld ? "auto" : "none"}
                       aria-hidden
