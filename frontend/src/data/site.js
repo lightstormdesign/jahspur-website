@@ -262,7 +262,7 @@ export const WORLD = {
     region: [0, 0, 941, 1672],
     portal: { loop: v("/world/portal-phone.mp4"), poster: v("/world/portal-phone-poster.webp"), cutout: v("/jahspur-hero-mobile-cutout.webp"), rect: [1.88, -1.88, 937.24, 1675.88] },
     transition: { src: v("/world/transition-phone.mp4"), poster: v("/world/transition-phone-poster.webp"), rect: [1.88, -1.88, 937.24, 1675.88] },
-    sky: { src: v("/world/sky-phone.mp4"), poster: v("/world/sky-phone-poster.webp"), rect: [1.88, -3.76, 937.24, 1678.63] },
+    sky: { src: v("/world/sky-phone.mp4"), birds: v("/world/sky-birds-phone.mp4"), poster: v("/world/sky-phone-poster.webp"), rect: [1.88, -3.76, 937.24, 1678.63] },
     layers: [
       { key: "sky", src: v("/world/phone-sky.webp"), depth: 0 },
       { key: "mountains", src: v("/world/phone-mountains.webp"), depth: 0.05 },
@@ -276,7 +276,7 @@ export const WORLD = {
     region: [0, 0, 1182, 664.88],
     portal: { loop: v("/world/portal-desktop.mp4"), poster: v("/world/portal-desktop-poster.webp"), cutout: v("/jahspur-hero-desktop-cutout.webp"), rect: [0, 0, 1182, 664.88] },
     transition: { src: v("/world/transition-desktop.mp4"), poster: v("/world/transition-desktop-poster.webp"), rect: [0, 0, 1182, 664.88] },
-    sky: { src: v("/world/sky-desktop.mp4"), poster: v("/world/sky-desktop-poster.webp"), rect: [0, 4.73, 1182, 659.95] },
+    sky: { src: v("/world/sky-desktop.mp4"), birds: v("/world/sky-birds-desktop.mp4"), poster: v("/world/sky-desktop-poster.webp"), rect: [0, 4.73, 1182, 659.95] },
     layers: [
       { key: "sky", src: v("/world/desktop-sky.webp"), depth: 0 },
       { key: "mountains", src: v("/world/desktop-mountains.webp"), depth: 0.05 },
