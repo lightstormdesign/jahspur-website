@@ -186,7 +186,8 @@ export const JahWorld = ({ isMobile }) => {
   const transitionRef = useRef(null);
   const recoveredRef = useRef(null);
   const skyVideoRef = useRef(null);
-  const birdVideoRef = useRef(null); // the landing's sky, with birds crossing it (plays once, then the loop)
+  const birdVideoRef = useRef(null); // the same sky with birds crossing it (once, after the loop's first pass)
+  const birdsPlayedRef = useRef(false); // the birds have had their one crossing
   const layerRefs = useRef([]);
   const rectRefs = useRef({}); // portal loop / ben / transition / sky video wrappers
   const anchorRefs = useRef([]);
@@ -271,12 +272,14 @@ export const JahWorld = ({ isMobile }) => {
   // once the clip has ended and the layers are in: start the living sky, fade the held last frame out
   useEffect(() => {
     if (phase !== "world" || !layersReady) return;
-    // the sky lands with birds crossing it (6s, once); its last frame is the loop's first, so
-    // when it ends the loop takes over seamlessly (see the birds video's onEnded)
-    const bird = birdVideoRef.current;
-    const loopSky = () => skyVideoRef.current?.play().catch(() => {});
-    if (bird && !reduce) bird.play().catch(loopSky);
-    else loopSky();
+    // the sky: the plain loop plays one pass first (time to read the bio), then the birds cross
+    // it once, then the loop carries on for good. The birds clip starts and ends on the loop's
+    // first frame, so both hand-overs are seamless (see the two videos' onEnded).
+    const sky = skyVideoRef.current;
+    if (sky) {
+      sky.loop = reduce || !birdVideoRef.current; // no birds: just loop
+      sky.play().catch(() => {});
+    }
     const t1 = setTimeout(() => setFading(true), 0);
     const t2 = setTimeout(() => setHoldGone(true), 950);
     return () => {
@@ -906,20 +909,42 @@ export const JahWorld = ({ isMobile }) => {
                       onPlaying={(ev) =>
                         afterFirstFrame(ev.currentTarget, () => {
                           setSkyShown(true);
-                          setBirdsDone(true); // the loop is up: the birds clip can go
+                          if (birdsPlayedRef.current) setBirdsDone(true); // back from the birds: they can go
                         })
                       }
+                      onEnded={(ev) => {
+                        // the first pass is over: the birds cross (from the same frame)
+                        const v = ev.currentTarget;
+                        const bird = birdVideoRef.current;
+                        const keepLooping = () => {
+                          v.loop = true;
+                          try {
+                            v.currentTime = 0;
+                          } catch (e) {}
+                          v.play().catch(() => {});
+                        };
+                        if (!bird || birdsPlayedRef.current) return keepLooping();
+                        birdsPlayedRef.current = true;
+                        try {
+                          bird.currentTime = 0;
+                        } catch (e) {}
+                        bird.play().catch(() => {
+                          setBirdsDone(true);
+                          keepLooping();
+                        });
+                      }}
                       src={loadWorld ? S.sky.src : undefined}
                       poster={loadWorld ? S.sky.poster : undefined}
                       muted
-                      loop
                       playsInline
                       preload={loadWorld ? "auto" : "none"}
                       aria-hidden
                       tabIndex={-1}
+                      onLoadedData={onLayerLoad}
+                      onError={onLayerLoad}
                     />
-                    {/* on landing: the same sky with birds flying across it, once (so you see the
-                        world is alive), then the loop above takes over from the same frame */}
+                    {/* after the loop's first pass: the same sky with birds flying across it, once (so
+                        you see the world is alive), then the loop takes over again from the same frame */}
                     <video
                       ref={birdVideoRef}
                       className="absolute inset-0 h-full w-full object-fill"
@@ -928,6 +953,7 @@ export const JahWorld = ({ isMobile }) => {
                       onEnded={() => {
                         const v = skyVideoRef.current;
                         if (!v) return setBirdsDone(true);
+                        v.loop = true;
                         try {
                           v.currentTime = 0;
                         } catch (e) {}
@@ -940,8 +966,6 @@ export const JahWorld = ({ isMobile }) => {
                       preload={loadWorld ? "auto" : "none"}
                       aria-hidden
                       tabIndex={-1}
-                      onLoadedData={onLayerLoad}
-                      onError={onLayerLoad}
                     />
                   </div>
                 )}
